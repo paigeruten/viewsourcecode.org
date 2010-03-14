@@ -1,0 +1,37 @@
+# Use PHP 5
+AddType application/x-httpd-php5 .php
+# AddHandler application/x-httpd-php5 .php
+
+RewriteEngine on
+
+RewriteRule ^(browse|homebrew|xperiments|whale|about|administrate)/?$ $1.php
+
+RewriteRule ^browse/(.+)/?$ browse.php?dir=$1
+
+RewriteRule ^viewsource/(.+)/?$ viewsource.php?file=/$1
+
+RewriteRule ^homebrew/([^/]+)/?$ homebrew.php?name=$1
+RewriteRule ^homebrew/([^/]+)/download/?$ homebrew.php?name=$1&download
+RewriteRule ^homebrew/([^/]+)/download/source/?$ homebrew.php?name=$1&download&source
+
+RewriteRule ^whale/edit/([0-9]+)/?$ whale.php?edit=$1
+RewriteRule ^whale/delete/([0-9]+)/?$ whale.php?delete=$1
+
+RewriteRule ^administrate/([^/]+)/?$ administrate.php?page=$1
+RewriteRule ^administrate/([^/]+)/add/?$ administrate.php?page=$1&add
+RewriteRule ^administrate/([^/]+)/([^/]+)/(edit|delete)/?$ administrate.php?page=$1&name=$2&$3
+RewriteRule ^administrate/comments/alltrash/([0-9]+)/?$ admin/comments.php?alltrash&time=$1
+
+RewriteRule ^comment/add/([a-z]+)/([0-9]+)/?$ comment/add.php?type=$1&article=$2
+RewriteRule ^comment/add/([a-z]+)/([0-9]+)/replyto/([0-9]+)/?$ comment/add.php?type=$1&article=$2&replyto=$3
+RewriteRule ^comment/add/([a-z]+)/([0-9]+)/submit/?$ comment/add.php?type=$1&article=$2&submit
+RewriteRule ^comment/add/([a-z]+)/([0-9]+)/replyto/([0-9]+)/submit/?$ comment/add.php?type=$1&article=$2&replyto=$3&submit
+RewriteRule ^comment/delete/([0-9]+)/?$ comment/delete.php?comment=$1
+RewriteRule ^comment/ban/([0-9]+)/?$ comment/delete.php?comment=$1&ban
+RewriteRule ^comment/edit/([0-9]+)/?$ comment/edit.php?comment=$1
+RewriteRule ^comment/edit/([0-9]+)/submit/?$ comment/edit.php?comment=$1&submit
+RewriteRule ^comment/publish/([0-9]+)/?$ comment/publish.php?comment=$1
+
+RewriteRule ^posts/([^/]+)/?$ blog.php?title=$1
+
+RewriteRule ^food/?$ food.php

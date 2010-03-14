@@ -1,0 +1,98 @@
+div.code {
+	margin: 1em;
+	padding: 1em;
+	border: 1px solid #b40;
+	background-color: #fc7;
+	font-family: mono;
+	font-size: 12pt;
+}
+
+span.code_variable {
+	color: #050;
+}
+
+span.code_method {
+	color: #000;
+}
+
+span.code_number {
+	color: #a00;
+}
+
+span.code_prompt {
+	color: #00a;
+}
+
+span.code_string {
+	color: #a40;
+}
+
+span.code_keyword {
+	color: #636;
+}
+
+p span.code_variable {
+	font-family: mono;
+	font-size: 16pt;
+}
+
+p span.code_method {
+	font-family: mono;
+	font-size: 16pt;
+}
+
+p span.code_number {
+	font-family: mono;
+	font-size: 16pt;
+}
+
+p span.code_prompt {
+	font-family: mono;
+	font-size: 16pt;
+}
+
+p span.code_string {
+	font-family: mono;
+	font-size: 16pt;
+}
+
+p span.code_keyword {
+	font-family: mono;
+	font-size: 16pt;
+}
+
+li span.code_variable {
+	font-family: mono;
+	font-size: 16pt;
+}
+
+li span.code_method {
+	font-family: mono;
+	font-size: 16pt;
+}
+
+li span.code_number {
+	font-family: mono;
+	font-size: 16pt;
+}
+
+li span.code_prompt {
+	font-family: mono;
+	font-size: 16pt;
+}
+
+li span.code_string {
+	font-family: mono;
+	font-size: 16pt;
+}
+
+li span.code_keyword {
+	font-family: mono;
+	font-size: 16pt;
+}
+
+table.code td {
+	border: 1px solid #36a;
+	padding: 5px;
+	font-size: 14pt;
+}
