@@ -43,6 +43,14 @@ include 'include/header.php';
 		<a href="http://github.com/yjerem/fun"><strong>fun</strong></a><br />
 		A society of wily programs.
 	</li>
+	<li>
+		<a href="http://github.com/yjerem/tetrellis"><strong>tetrellis</strong></a><br />
+		Tetris with an antagonist.
+	</li>
+	<li>
+		<a href="http://github.com/yjerem/EbFFA"><strong>EbFFA</strong></a><br />
+		a musical plaything, a melodious calculator from the stranded gull underneath it all
+	</li>
 </ul>
 
 <?php

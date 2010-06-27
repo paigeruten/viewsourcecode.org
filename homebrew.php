@@ -121,7 +121,8 @@ if (isset($_GET['name'])) {
 							<td>
 								<a href="/bible/dsbible-translation-asv.zip">American Standard Version</a> formatted by <strong>David Kienitz</strong><br />
 								<a href="/bible/dsbible-translation-darby.zip">Darby Version</a> formatted by <strong>David Kienitz</strong><br />
-								<a href="/bible/dsbible-translation-websters.zip">Webster\'s Bible</a> formatted by <strong>David Kienitz</strong>
+								<a href="/bible/dsbible-translation-websters.zip">Webster\'s Bible</a> formatted by <strong>David Kienitz</strong><br />
+								<a href="/bible/dsbible-translation-nkjv.zip">New King James Version</a> formatted by <strong>Adam Humphreys</strong>
 							</td>
 						</tr>
 						<tr>
@@ -223,7 +224,7 @@ if (isset($_GET['name'])) {
 							<li><a href="/homebrew/' . $homebrew['url_name'] . '/download/source">&raquo; Download source code</a></li>
 						</ul>
 					</div>
-				</div>	
+				</div>
 			</div>
 		';
 	}
@@ -232,3 +233,4 @@ if (isset($_GET['name'])) {
 include 'include/footer.php';
 
 ?>
+
