@@ -122,7 +122,8 @@ if (isset($_GET['name'])) {
 								<a href="/bible/dsbible-translation-asv.zip">American Standard Version</a> formatted by <strong>David Kienitz</strong><br />
 								<a href="/bible/dsbible-translation-darby.zip">Darby Version</a> formatted by <strong>David Kienitz</strong><br />
 								<a href="/bible/dsbible-translation-websters.zip">Webster\'s Bible</a> formatted by <strong>David Kienitz</strong><br />
-								<a href="/bible/dsbible-translation-nkjv.zip">New King James Version</a> formatted by <strong>Adam Humphreys</strong>
+								<a href="/bible/dsbible-translation-nkjv.zip">New King James Version</a> formatted by <strong>Adam Humphreys</strong><br />
+								<a href="/bible/dsbible-translation-ylt.zip">Young\'s Literal Translation (1862)</a> formatted by <strong>Emmanuel Ernel Sapinoso</strong>
 							</td>
 						</tr>
 						<tr>
@@ -142,10 +143,35 @@ if (isset($_GET['name'])) {
 								<a href="/bible/dsbible-translation-nvi.zip">Bíblia NVI</a> formatted by <strong>Miguel Carlos dos Santos Junior</strong>
 							</td>
 						</tr>
+						<tr>
+							<td valign="top">
+								Tagalog
+							</td>
+							<td>
+								<a href="/bible/dsbible-translation-tagalog.zip">Ang Biblia Tagalog 1905</a> formatted by <strong>Emmanuel Ernel Sapinoso</strong>
+							</td>
+						</tr>
 					</table><br />
 
 					If you want your translation(s) added, please e-mail them to <a href="mailto:jeremy.ruten@gmail.com"><strong>jeremy.ruten@gmail.com</strong></a>.
 				</div>
+
+				<h3 class="homebrew_page_subtitle">Frequently Asked Questions</h3>
+
+				<p>
+					<strong>When I start up DSbible, it is frozen on "Initializing FAT..."</strong><br />
+        	This could mean you need to <a href="http://dldi.drunkencoders.com/index.php?title=End-user_instructions">DLDI-patch</a> <code>bible.nds</code> for your device. More likely, it could mean that it can\'t find the data files because you put them in the wrong place. Make sure you copied the "bible" folder that came with DSbible to the root of your memory card, i.e. don\'t put it in any other folder on your memory card. Put it on the top.
+				</p>
+
+				<p>
+					<strong>How do I get NIV on this thing?</strong><br />
+					The <acronym title="New International Version">NIV</acronym> translation of the Bible and a lot of other modern translations are copyrighted, which I think means it would be illegal to distribute them with or alongside DSbible. Something about that doesn\'t seem right at all, but it\'s the reality.
+				</p>
+
+				<p>
+					<strong>Can you add this feature please?</strong><br />
+					Sorry, I cannot add it because I am not working on DSbible anymore. I lack the software, the hardware, and the motivation. I moved on from DS homebrew quite a while ago. I was bad at programming, especially things as nice as DSbible, so it\'s a mess under there. It would be no fun at all to add a feature. I have a lovely Bible app on my iPod Touch, so I have no itch left for DSbible to scratch. If you\'d like to maintain DSbible, I\'ll gladly hand it over.
+				</p>
 			';
 		}
 

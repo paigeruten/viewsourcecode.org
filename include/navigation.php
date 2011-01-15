@@ -9,10 +9,8 @@
 // displayed on the menu and the value is the URL name of that page.
 $nav_items = array(
 	'Home'             => '',
-	'Browse the code'  => 'browse',
 	'DS Homebrew'      => 'homebrew',
 	'Experiments'      => 'xperiments',
-//	'Cool Whale Craft' => 'whale',
 	'About'            => 'about',
 );
 

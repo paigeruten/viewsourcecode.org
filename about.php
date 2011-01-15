@@ -24,7 +24,7 @@ include 'include/header.php';
 
 <p>you look around for the first time in weeks and the place is deserted. see, you're not in wal-mart anymore. you're in...</p>
 
-<p style="font-weight: bold; font-size: 14pt; text-align: center;"><em>~ jeremy Ruten's abode. ~</em></p>
+<p style="font-weight: bold; font-size: 14pt; text-align: center;"><em>~ yjerem's abode. ~</em></p>
 
 <?php
 
@@ -32,8 +32,9 @@ $lines = array(
 	'now let\'s all go to',
 	'<a href="mailto:jeremy.ruten@gmail.com">the email trail.</a>',
 	'<a href="http://github.com/yjerem">the code road.</a>',
-	'<a href="http://stackoverflow.com/users/813/jeremy-ruten">the stack track.',
+	'<a href="http://stackoverflow.com/users/813/yjerem">the stack track.',
 	'<a href="http://news.ycombinator.com/user?id=Jeremysr">the news cruise.</a>',
+	'<a href="http://twitter.com/yjerem">the tweet street.</a>',
 	'<a href="http://viewsourcecode.org/about">the roundabout.</a>'
 );
 
@@ -46,3 +47,4 @@ foreach ($lines as $line) {
 include 'include/footer.php';
 
 ?>
+

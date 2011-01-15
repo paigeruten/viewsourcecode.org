@@ -16,10 +16,6 @@ include 'include/header.php';
 
 <ul>
 	<li>
-		<a href="/experiments/tryruby"><strong>Try Ruby! (for mobiles)</strong></a><br />
-		It's an interface to <a href="http://whytheluckystiff.net">why</a>'s <a href="http://tryruby.hobix.com">Try Ruby!</a> but it uses a textbox so it works on such devices as Nintendo DS and iPhone/iPod Touch.
-	</li>
-	<li>
 		<a href="/experiments/picturebook"><strong>Picture Book</strong></a><br />
 		Make your own picture book! Write a &lt;50-sentence story and it'll use Google Images to make it into a picture book.
 	</li>
@@ -40,16 +36,20 @@ include 'include/header.php';
 		Numbers off tickets.  This thing has saved lives, you know.  It's my proudest achievement.
 	</li>
 	<li>
-		<a href="http://github.com/yjerem/fun"><strong>fun</strong></a><br />
-		A society of wily programs.
-	</li>
-	<li>
 		<a href="http://github.com/yjerem/tetrellis"><strong>tetrellis</strong></a><br />
 		Tetris with an antagonist.
 	</li>
 	<li>
 		<a href="http://github.com/yjerem/EbFFA"><strong>EbFFA</strong></a><br />
 		a musical plaything, a melodious calculator from the stranded gull underneath it all
+	</li>
+	<li>
+		<a href="http://github.com/yjerem/rusi"><strong>rusi</strong></a><br />
+		A horrible abuse of method_missing. Attempts to make unit arithmetic and conversion in Ruby pretty or something.
+	</li>
+	<li>
+		<a href="http://github.com/yjerem/listlace"><strong>listlace</strong></a><br />
+		A Shoes music player that lets you tie your own shoelaces, where the shoelaces are your playlists. That's right, build a playlist using all the power and freedom of Ruby.
 	</li>
 </ul>
 

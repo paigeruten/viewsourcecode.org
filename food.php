@@ -1,6 +1,6 @@
 <rss version="2.0">
 	<channel>
-		<title>~ jeremy Ruten's abode ~</title>
+		<title>~ yjerem's abode ~</title>
 		<link>http://viewsourcecode.org/</link>
 		<description>an enchanted avenue, where all the snores come out of thin air</description>
 
@@ -27,3 +27,4 @@
 
 	</channel>
 </rss>
+
