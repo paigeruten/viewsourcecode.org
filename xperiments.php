@@ -32,10 +32,6 @@ include 'include/header.php';
 		Creates a static html archive that mixes external links with internal mirroring.  I use it for <a href="/why">_why's Estate</a>.
 	</li>
 	<li>
-		<a href="http://github.com/yjerem/ticket_numberer"><strong>ticket_numberer</strong></a><br />
-		Numbers off tickets.  This thing has saved lives, you know.  It's my proudest achievement.
-	</li>
-	<li>
 		<a href="http://github.com/yjerem/tetrellis"><strong>tetrellis</strong></a><br />
 		Tetris with an antagonist.
 	</li>
@@ -43,14 +39,10 @@ include 'include/header.php';
 		<a href="http://github.com/yjerem/EbFFA"><strong>EbFFA</strong></a><br />
 		a musical plaything, a melodious calculator from the stranded gull underneath it all
 	</li>
-	<li>
-		<a href="http://github.com/yjerem/rusi"><strong>rusi</strong></a><br />
-		A horrible abuse of method_missing. Attempts to make unit arithmetic and conversion in Ruby pretty or something.
-	</li>
-	<li>
-		<a href="http://github.com/yjerem/listlace"><strong>listlace</strong></a><br />
-		A Shoes music player that lets you tie your own shoelaces, where the shoelaces are your playlists. That's right, build a playlist using all the power and freedom of Ruby.
-	</li>
+  <li>
+    <a href="http://github.com/yjerem/4917"><strong>4917</strong></a><br />
+    assembler & emulator for a simple machine
+  </li>
 </ul>
 
 <?php

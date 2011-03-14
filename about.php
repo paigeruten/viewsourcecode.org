@@ -24,7 +24,7 @@ include 'include/header.php';
 
 <p>you look around for the first time in weeks and the place is deserted. see, you're not in wal-mart anymore. you're in...</p>
 
-<p style="font-weight: bold; font-size: 14pt; text-align: center;"><em>~ yjerem's abode. ~</em></p>
+<p style="font-weight: bold; font-size: 14pt; text-align: center;"><em>~ Jeremy Ruten's abode. ~</em></p>
 
 <?php
 
