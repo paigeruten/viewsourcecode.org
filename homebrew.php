@@ -39,9 +39,9 @@ if (isset($_GET['name'])) {
 
 	if (mysql_num_rows($result)) {
 		$homebrew = mysql_fetch_assoc($result);
-		$page_title = 'DS Homebrew - ' . $homebrew['name'];
+		$page_title = $homebrew['name'];
 	} else {
-		$page_title = 'DS Homebrew - Error';
+		$page_title = 'Error';
 	}
 } else {
 	$page_title = 'DS Homebrew';

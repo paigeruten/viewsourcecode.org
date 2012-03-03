@@ -24,12 +24,19 @@ database_connect();
 // Send header saying that we're using Unicode
 header('Content-Type: text/html; charset=UTF-8');
 
+// Make the title.
+if (empty($page_title)) {
+	$page_title = "Jeremy Ruten";
+} else {
+	$page_title = "Jeremy Ruten: $page_title";
+}
+
 // Go out of PHP mode and print the HTML header.
 ?>
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>View Source Code - <?php echo $page_title; ?></title>
+		<title><?php echo $page_title; ?></title>
 		<link rel="stylesheet" href="/style.css" />
 		<link rel="stylesheet" href="/code.css" />
 		<link rel="shortcut icon" href="/favicon.ico">
@@ -39,13 +46,15 @@ header('Content-Type: text/html; charset=UTF-8');
 	</head>
 	<body>
 		<div id="container">
-			<div id="banner">
-				<h1>View Source Code</h1>
-			</div>
-			<div id="nav">
-				<ul>
-					<?php print_nav_list_items(); ?>
-				</ul>
+			<div id="top">
+				<div id="banner">
+					<h1>Jeremy Ruten</h1>
+				</div>
+				<div id="nav">
+					<ul>
+						<?php print_nav_list_items(); ?>
+					</ul>
+				</div>
 			</div>
 			<div id="content">
 				<?php

@@ -10,9 +10,13 @@ include 'include/header.php';
 
 ?>
 
+<!--
 <p style="text-align: center;"><img src="/images/flag.png" /></p>
 
 <p style="text-align: center; font-size: 8pt;">...our humble flag...</p>
+-->
+
+<p style="text-align: center;"><img src="/images/kinnor.gif" /></p>
 
 <p>imagine you are standing in the parking lot in pouring rain. you gave away your umbrella to a little kid, so you're soaked. you walk into wal-mart and the place is just bustling with animals, walking talking and shopping. a couple giraffes are picking out their first vacuum cleaner. an elephant in business attire bumps past you, shouting angrily into his cell phone. oh and look, there's the town bear. just walking up and down the building, snapping photos, non stop.</p>
 

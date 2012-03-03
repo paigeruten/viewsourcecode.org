@@ -1,24 +1,26 @@
 body {
 	margin: 0;
 	padding: 0;
-	font-family: sans;
+	font-family: Utopia, Georgia, Times, serif;
 }
 
 div#viewsource_topbar {
 	margin: 0;
 	padding: 0;
-	background-color: #147;
+	background-color: #444;
+	box-shadow: 0px 0px 10px 2px #444;
 }
 
 div#viewsource_topbar a {
 	display: block;
 	padding: 1em;
 	color: #f70;
+	text-shadow: #666 1px 1px 0;
 	text-decoration: none;
 }
 
 div#viewsource_topbar a:hover {
-	background-color: #258;
+	background-color: #505050;
 	text-decoration: underline;
 	color: #f81;
 }

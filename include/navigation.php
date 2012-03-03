@@ -55,21 +55,5 @@ function print_nav_list_items() {
 			</li>
 		';
 	}
-
-	// Echo a hidden Admin link which will show up if you hover over it
-	if ($current_page == 'administrate') {
-		$nav_class = 'nav_active';
-	} else if ($_SESSION['is_admin']) {
-		$nav_class = 'nav_inactive';
-	} else {
-		$nav_class = 'nav_hidden';
-	}
-
-	echo '
-		<li class="' . $nav_class . '">
-			<a href="/administrate">
-				Admin
-			</a>
-		</li>
-	';
 }
+

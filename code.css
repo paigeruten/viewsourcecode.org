@@ -3,7 +3,7 @@ div.code {
 	padding: 1em;
 	border: 1px solid #b40;
 	background-color: #fc7;
-	font-family: mono;
+	font-family: monospace;
 	font-size: 12pt;
 }
 
@@ -92,7 +92,7 @@ li span.code_keyword {
 }
 
 table.code td {
-	border: 1px solid #36a;
+	border: 1px solid #666;
 	padding: 5px;
 	font-size: 14pt;
 }

@@ -6,7 +6,6 @@
  * http://viewsourcecode.org/.
  */
 
-$page_title = 'Home';
 include 'include/header.php';
 
 echo '

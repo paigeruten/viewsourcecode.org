@@ -11,11 +11,6 @@
 
 			</div>
 			<div id="footer">
-				<div id="footer_info">
-				</div>
-				<div id="footer_viewsource">
-					<a href="/viewsource<?php echo $_SERVER['PHP_SELF']; ?>">View Source</a>
-				</div>
 			</div>
 		</div>
 		<br /><br />
