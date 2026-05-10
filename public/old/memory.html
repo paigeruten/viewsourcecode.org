@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Memory Lane</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="style.css" rel="stylesheet" type="text/css" media="all">
+  </head>
+  <body>
+    <div id="container">
+      <heading>
+        <nav><a href="index.html">&larr; back to index</a></nav>
+      </heading>
+      <h2>Memory Lane</h2>
+      <p>Memory lane is a long lane. It is lined with identical-looking houses on one side, and trees on the other. Each house is numbered, like houses normally are, except much more logically in that the first house is <span class="code"><span class="number">0</span></span>, the next house is <span class="code"><span class="number">1</span></span>, then <span class="code"><span class="number">2</span></span>, and so on. We&rsquo;ll call this number the house&rsquo;s <strong>address</strong>. The address of a house may never change.</p>
+      <p>Each one of these houses also <em>contains</em> a number. This number can be found by adding together all the ages of the house&rsquo;s occupants. For example, if house <span class="code"><span class="number">17</span></span> is occupied by a 1-year-old baby and a 32-year-old mother, that house represents the number <span class="code"><span class="number">33</span></span> (because 1 + 32 = 33).</p>
+      <p>There are some serious restrictions on who may occupy a house, however. There are only eight kinds of people that may occupy a house:</p>
+      <table>
+        <tr><th>Person</th><th>Age</th></tr>
+        <tr><td>The Baby</td><td>1</td></tr>
+        <tr><td>The Toddler</td><td>2</td></tr>
+        <tr><td>The Preschooler</td><td>4</td></tr>
+        <tr><td>The Preteen</td><td>8</td></tr>
+        <tr><td>The Teenager</td><td>16</td></tr>
+        <tr><td>The Parent</td><td>32</td></tr>
+        <tr><td>The Grandparent</td><td>64</td></tr>
+        <tr><td>The Greatgrandparent</td><td>128</td></tr>
+      </table>
+      <p>Furthermore, no two people in a house may be of the same age. If you know a house contains the number <span class="code"><span class="number">64</span></span>, you know that it must have a single <span class="code"><span class="klass">Grandparent</span></span> living in it, and not two <span class="code"><span class="klass">Parent</span></span>s, for example.</p>
+      <p>It turns out that with this system, a house can represent any number from <span class="code"><span class="number">0</span></span> to <span class="code"><span class="number">255</span></span>.</p>
+      <p>Let&rsquo;s figure out a shorthand way of representing which people live in a particular house. First let&rsquo;s make a table where the first column shows the people&rsquo;s names, and the second column shows how many of those people live in the house.</p>
+      <table>
+        <tr><td>Greatgrandparents</td><td>1</td></tr>
+        <tr><td>Grandparents</td><td>0</td></tr>
+        <tr><td>Parents</td><td>1</td></tr>
+        <tr><td>Teenagers</td><td>0</td></tr>
+        <tr><td>Preteens</td><td>0</td></tr>
+        <tr><td>Preschoolers</td><td>1</td></tr>
+        <tr><td>Toddlers</td><td>1</td></tr>
+        <tr><td>Babies</td><td>1</td></tr>
+      </table>
+      <p>This house contains a <span class="code"><span class="klass">Greatgrandparent</span></span>, a <span class="code"><span class="klass">Parent</span></span>, a <span class="code"><span class="klass">Preschooler</span></span>, a <span class="code"><span class="klass">Toddler</span></span>, and a <span class="code"><span class="klass">Baby</span></span>. Adding the ages of these people together tells us that this house represents the number <span class="code"><span class="number">167</span></span> (because 128 + 32 + 4 + 2 + 1 = 167).</p>
+      <p>Now, if you keep writing down tables like this to represent numbers, you&rsquo;ll realize that the first row of the table is unnecessary. If you can remember what order they come in (oldest to youngest), all you really have to write are the numbers in the second column, like this:</p>
+      <blockquote>
+        <span class="code"><span class="number">10100111</span></span>
+      </blockquote>
+      <p>The first digit represents the <span class="code"><span class="klass">Greatgrandparent</span></span>, so we have one <span class="code"><span class="klass">Greatgrandparent</span></span>, the next digit represents the <span class="code"><span class="klass">Grandparent</span></span>, so we have zero <span class="code"><span class="klass">Grandparent</span></span>s, and so on all the way to the final digit which tells us we have one <span class="code"><span class="klass">Baby</span></span>.</p>
+      <p>Here are the numbers <span class="code"><span class="number">0</span></span> through <span class="code"><span class="number">7</span></span> represented by our new shorthand:</p>
+      <blockquote>
+        <span class="code"><span class="number">00000000</span></span> = <span class="code"><span class="number">0</span></span> (no people)<br>
+        <span class="code"><span class="number">00000001</span></span> = <span class="code"><span class="number">1</span></span> (one <span class="code"><span class="klass">Baby</span></span>)<br>
+        <span class="code"><span class="number">00000010</span></span> = <span class="code"><span class="number">2</span></span> (one <span class="code"><span class="klass">Toddler</span></span>)<br>
+        <span class="code"><span class="number">00000011</span></span> = <span class="code"><span class="number">3</span></span> (a <span class="code"><span class="klass">Baby</span></span> and a <span class="code"><span class="klass">Toddler</span></span>)<br>
+        <span class="code"><span class="number">00000100</span></span> = <span class="code"><span class="number">4</span></span> (one <span class="code"><span class="klass">Preschooler</span></span>)<br>
+        <span class="code"><span class="number">00000101</span></span> = <span class="code"><span class="number">5</span></span> (a <span class="code"><span class="klass">Baby</span></span> and a <span class="code"><span class="klass">Preschooler</span></span>)<br>
+        <span class="code"><span class="number">00000110</span></span> = <span class="code"><span class="number">6</span></span> (a <span class="code"><span class="klass">Toddler</span></span> and a <span class="code"><span class="klass">Preschooler</span></span>)<br>
+        <span class="code"><span class="number">00000111</span></span> = <span class="code"><span class="number">7</span></span> (a <span class="code"><span class="klass">Baby</span></span>, a <span class="code"><span class="klass">Toddler</span></span>, and a <span class="code"><span class="klass">Preschooler</span></span>)
+      </blockquote>
+      <p>Hopefully, I have just succeeded in tricking you into learning <strong>binary</strong>. Binary is a system of representing numbers using <span class="code"><span class="number">1</span></span>&rsquo;s and <span class="code"><span class="number">0</span></span>&rsquo;s. It is used by computers to represent information. Computers have their own memory lane, with billions of houses, called <strong>bytes</strong>. Bytes are made up of eight digits called <strong>bits</strong>, which can be <span class="code"><span class="number">1</span></span>&rsquo;s or <span class="code"><span class="number">0</span></span>&rsquo;s, and represent numbers the exact same way as I have described.</p>
+      <p>So now you know how computers represent <em>numbers</em> with ones and zeros. But how do computers represent actual <strong>information</strong>, like words, pictures, music, and videos?</p>
+      <p>Within computers, <strong>everything is a number</strong>. All information is represented by numbers. And all numbers are represented in binary.</p>
+      <p>First we&rsquo;ll start with the simplest form of information, <strong>text</strong>. Computers usually represent letters and other visible characters using a code which pairs numbers with characters. It&rsquo;s just like that &ldquo;a=1 b=2 c=3 &hellip;&rdquo; code you used as a kid to discreetly tell your friends to meet at the clubhouse on Saturday afternoon. Computers nowadays almost always use a code called ASCII to represent the simplest characters. You can see what numbers represent what characters in ASCII at <a href="http://asciitable.com">asciitable.com</a>. For example, my first name could be represented as follows:</p>
+      <table>
+        <tr><th>Text</th><td>J</td><td>e</td><td>r</td><td>e</td><td>m</td><td>y</td></tr>
+        <tr><th>ASCII code</th><td>74</td><td>101</td><td>114</td><td>101</td><td>109</td><td>121</td></tr>
+        <tr><th>Binary</th><td>01001010</td><td>01100101</td><td>01110010</td><td>01100101</td><td>01101101</td><td>01111001</td></tr>
+      </table>
+      <p>Six &ldquo;houses&rdquo; (i.e. <strong>bytes</strong>),  side by side, each representing a letter from my name.</p>
+      <p>Now let&rsquo;s think about how <strong>images</strong> are represented by a computer. What is an image exactly? Well, an image is really just an array of pixels, and a pixel can be described entirely by its colour.</p>
+      <p>Colours can be (and often are) stored as three numbers: the amount of red in the colour, the amount of green, and the amount of blue. By mixing different amounts of red, green, and blue, you can create just about any colour on a computer screen. So to represent a colour in a computer, we could have three bytes, one representing red, one for green, and one for blue.</p>
+      <p>If, for example, the &ldquo;red&rdquo; byte contained the number <span class="code"><span class="number">255</span></span>, the &ldquo;green&rdquo; byte contained the number <span class="code"><span class="number">127</span></span>, and the &ldquo;blue&rdquo; byte contained the number <span class="code"><span class="number">0</span></span>, the three bytes together would represent the colour orange by mixing 100% red with 50% green and no blue. (Remember that the lowest number a byte can represent is <span class="code"><span class="number">0</span></span>, and the highest number a byte can represent is <span class="code"><span class="number">255</span></span>.)</p>
+      <p>Here is an example of how an image of a smilie might be stored.</p>
+      <p><img src="memory.png"></p>
+      <p>See, each pixel has three numbers: amount of red, green, and blue, in that order, ranging from <span class="code"><span class="number">0</span></span> (no colour) to <span class="code"><span class="number">255</span></span> (all colour). These numbers can be stored in a single straight line of memory, as long as we keep in mind that every three bytes represents one pixel, and as long as we know the width of the image so that we know when to start a new line.</p>
+      <p>Next we&rsquo;ll look at <strong>sound</strong> and <strong>music</strong>. Again, we have to ask ourselves exactly what these things are. Sound is a wave, a vibration that travels through the air to your ears. Using a microphone a computer can take these sound waves and record the <strong>amplitude</strong> of the waves many thousand times per second as they flow in. The amplitude of a wave is a measurement of distance, so it can already be represented as a number. Therefore, computers can represent sounds with a long array of numbers representing the amplitude of the sound wave at different (and extremely close-together) points in time.</p>
+      <p>Lastly, <strong>video</strong> is just a combination of <strong>images</strong> and <strong>sound</strong>. So with the above knowledge you can easily predict how a computer might represent video with numbers.</p>
+      <p>Hopefully I have convinced you that everything in a computer can be represented with <span class="code"><span class="number">1</span></span>&rsquo;s and <span class="code"><span class="number">0</span></span>&rsquo;s, first by showing how <strong>numbers</strong> can be represented by <span class="code"><span class="number">1</span></span>&rsquo;s and <span class="code"><span class="number">0</span></span>&rsquo;s, then showing how the most common forms of information can be represented with numbers.</p>
+    </div>
+  </body>
+</html>
+

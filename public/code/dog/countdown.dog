@@ -1,0 +1,9 @@
+fetch 10
+drop plate1
+label loop
+   pickup plate1
+   show
+   bark " "
+   eat 1
+   drop plate1
+plate1 jump loop

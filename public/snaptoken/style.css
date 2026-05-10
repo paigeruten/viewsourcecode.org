@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css?family=Overpass+Mono:400,700');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  padding: 9px;
+  font-family: 'Overpass Mono', monospace;
+  line-height: 130%;
+  color: #333;
+  font-size: 18px;
+  max-width: 80ch;
+}
+
+h1::before { content: '\2014\2014' }
+h1::after { content: '\2014\2014' }
+h1 {
+  font-size: inherit;
+  font-weight: bold;
+}
+
+h2 {
+  margin-top: 18px;
+  font-size: inherit;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+p {
+  margin-top: 18px;
+}
+
+ul {
+  list-style-type: none;
+  margin-left: 2ch;
+}
+
+a {
+  color: blue;
+}
+
+a.avail {
+  font-weight: bold;
+}
+
+a.notyet {
+  color: #999;
+  cursor: default;
+}
+

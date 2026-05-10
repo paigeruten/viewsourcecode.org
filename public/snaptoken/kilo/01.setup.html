@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>1. Setup | Build Your Own Text Editor</title>
+    <link href="style.css" rel="stylesheet">
+  </head>
+  <body>
+    <header class="bar">
+      <nav>
+        <a href='#'></a>
+        <a href="index.html">contents</a>
+        <a href='02.enteringRawMode.html'>next &rarr;</a>
+      </nav>
+    </header>
+    <div id="container">
+      <h1 id="setup">Setup</h1>
+
+<p><img src="i/lego-step-one.png" alt="Step 1 of a Lego instruction booklet: a single Lego piece"></p>
+
+<p>Ahh, step 1. Don&rsquo;t you love a fresh start on a blank slate? And then selecting
+that singular brick onto which you will build your entire palatial estate?</p>
+
+<p>Unfortunately, when you&rsquo;re building a <em>computer program</em>, step 1 can get&hellip;
+complicated. And frustrating. You have to make sure your environment is set up
+for the programming language you&rsquo;re using, and you have to figure out how to
+compile and run your program in that environment.</p>
+
+<p>Fortunately, the program we are building doesn&rsquo;t depend on any external
+libraries, so you don&rsquo;t need anything beyond a C compiler and the standard
+library it comes with. (We will also be using the <code>make</code> program.) To check
+whether you have a C compiler installed, try running <code>cc --version</code> at the
+command line (<code>cc</code> stands for &ldquo;C Compiler&rdquo;). To check whether you have <code>make</code>,
+try running <code>make -v</code>.</p>
+<h2 id="how-to-install-a-c-compiler"><a href="#how-to-install-a-c-compiler">How to install a C compiler&hellip;</a></h2>
+<h3 id="in-windows"><a href="#in-windows">&hellip;in Windows</a></h3>
+
+<p>You will <strong>need to install some kind of Linux environment within Windows</strong>.
+This is because our text editor interacts with the terminal at a low level
+using the <code>&lt;termios.h&gt;</code> header, which isn&rsquo;t available on Windows. I suggest
+using either
+<a href="https://msdn.microsoft.com/en-us/commandline/wsl/about">Bash on Windows</a> or
+<a href="https://www.cygwin.com/">Cygwin</a>.</p>
+
+<p><strong>Bash on Windows</strong>: Only works on 64-bit Windows 10. See the
+<a href="https://msdn.microsoft.com/en-us/commandline/wsl/install_guide">installation guide</a>.
+After installing it, run <code>bash</code> at the command line whenever you want to enter
+the Linux environment. Inside <code>bash</code>, run <code>sudo apt-get install gcc make</code> to
+install the GNU Compiler Collection and the <code>make</code> program. If <code>sudo</code> takes a
+really long time to do anything, you may have to
+<a href="https://superuser.com/questions/1108197">fix your /etc/hosts file</a>.</p>
+
+<p><strong>Cygwin</strong>: Download the installer from
+<a href="https://cygwin.com/install.html">cygwin.com/install.html</a>. When the installer
+asks you to select packages to install, look in the <code>devel</code> category and select
+the <code>gcc-core</code> and <code>make</code> packages. To use Cygwin, you have to run the Cygwin
+terminal program. Unlike Bash on Windows, in Cygwin your home directory is
+separate from your Windows home directory. If you installed Cygwin to
+<code>C:\cygwin64</code>, then your home directory is at <code>C:\cygwin64\home\yourname</code>. So
+if you want to use a text editor outside of Cygwin to write your code, that&rsquo;s
+where you&rsquo;ll want to save to.</p>
+<h3 id="in-macos"><a href="#in-macos">&hellip;in macOS</a></h3>
+
+<p>When you try to run the <code>cc</code> command, a window should pop up asking if you want
+to install the command line developer tools. You can also run
+<code>xcode-select --install</code> to get this window to pop up. Then just click
+&ldquo;Install&rdquo; and it will install a C compiler and <code>make</code>, among other things.</p>
+<h3 id="in-linux"><a href="#in-linux">&hellip;in Linux</a></h3>
+
+<p>In Ubuntu, it&rsquo;s <code>sudo apt-get install gcc make</code>. Other distributions should
+have <code>gcc</code> and <code>make</code> packages available as well.</p>
+<h2 id="the-main-function"><a href="#the-main-function">The <code>main()</code> function</a></h2>
+
+<p>Create a new file named <code>kilo.c</code> and give it a <code>main()</code> function. (<code>kilo</code> is
+the name of the text editor we are building.)</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/main/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 1</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/main">main</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span></div><div class="line"><span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p>In C, you have to put all your executable code inside functions. The <code>main()</code>
+function in C is special. It is the default starting point when you run your
+program. When you <code>return</code> from the <code>main()</code> function, the program exits
+and passes the returned integer back to the operating system. A return value of
+<code>0</code> indicates success.</p>
+
+<p>C is a compiled language. That means we need to run our program through a C
+compiler to turn it into an executable file. We then run that executable like
+we would run any other program on the command line.</p>
+
+<p>To compile <code>kilo.c</code>, run <code>cc kilo.c -o kilo</code> in your shell. If no errors occur,
+this will produce an executable named <code>kilo</code>. <code>-o</code> stands for &ldquo;output&rdquo;, and
+specifies that the output executable should be named <code>kilo</code>.</p>
+
+<p>To run <code>kilo</code>, type <code>./kilo</code> in your shell and press <kbd>Enter</kbd>. The
+program doesn&rsquo;t print any output, but you can check its exit status (the value
+<code>main()</code> returns) by running <code>echo $?</code>, which should print <code>0</code>.</p>
+<h2 id="compiling-with-make"><a href="#compiling-with-make">Compiling with <code>make</code></a></h2>
+
+<p>Typing <code>cc kilo.c -o kilo</code> every time you want to recompile gets tiring. The
+<code>make</code> program allows you to simply run <code>make</code> and it will compile your program
+for you. You just have to supply a <code>Makefile</code> to tell it how to compile your
+program.</p>
+
+<p>Create a new file literally named <code>Makefile</code> with the following contents.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/make/Makefile">Makefile</a></div>
+  <div class="step-number">Step 2</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/make">make</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="nl">kilo</span><span class="o">:</span> <span class="nf">kilo.c</span></div><div class="line">	<span class="nv">$(CC)</span> kilo.c -o kilo -Wall -Wextra -pedantic -std<span class="o">=</span>c99</div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p>The first line says that <code>kilo</code> is what we want to build, and that <code>kilo.c</code> is
+what&rsquo;s required to build it. The second line specifies the command to run in
+order to actually build <code>kilo</code> out of <code>kilo.c</code>. Make sure to indent the second
+line with an actual tab character, and not with spaces. You can indent C files
+however you want, but <code>Makefile</code>s must use tabs.</p>
+
+<p>We have added a few things to the compilation command:</p>
+
+<ul>
+<li><code>$(CC)</code> is a variable that <code>make</code> expands to <code>cc</code> by default.</li>
+<li><code>-Wall</code> stands for &ldquo;<strong>all</strong> <strong>W</strong>arnings&rdquo;, and gets the compiler to warn you
+when it sees code in your program that might not technically be wrong, but is
+considered bad or questionable usage of the C language, like using variables
+before initializing them.</li>
+<li><code>-Wextra</code> and <code>-pedantic</code> turn on even more warnings. For each step in this
+tutorial, if your program compiles, it shouldn&rsquo;t produce any warnings except
+for &ldquo;unused variable&rdquo; warnings in some cases. If you get any other warnings,
+check to make sure your code exactly matches the code in that step.</li>
+<li><code>-std=c99</code> specifies the exact version of the C language <strong>st</strong>an<strong>d</strong>ard
+we&rsquo;re using, which is <a href="https://en.wikipedia.org/wiki/C99">C99</a>. C99 allows us
+to declare variables anywhere within a function, whereas
+<a href="https://en.wikipedia.org/wiki/ANSI_C">ANSI C</a> requires all variables to be
+declared at the top of a function or block.</li>
+</ul>
+
+<p>Now that we have a <code>Makefile</code>, try running <code>make</code> to compile the program.</p>
+
+<p>It may output <code>make: `kilo&#39; is up to date.</code>. It can tell that the current
+version of <code>kilo.c</code> has already been compiled by looking at each file&rsquo;s
+last-modified timestamp. If <code>kilo</code> was last modified after <code>kilo.c</code> was last
+modified, then <code>make</code> assumes that <code>kilo.c</code> has already been compiled, and so
+it doesn&rsquo;t bother running the compilation command. If <code>kilo.c</code> was last
+modified after <code>kilo</code> was, then <code>make</code> recompiles <code>kilo.c</code>. This is more useful
+for large projects with many different components to compile, as most of the
+components shouldn&rsquo;t need to be recompiled over and over when you&rsquo;re only
+making changes to one component&rsquo;s source code.</p>
+
+<p>Try changing the return value in <code>kilo.c</code> to a number other than <code>0</code>. Then run
+<code>make</code>, and you should see it compile. Run <code>./kilo</code>, and try <code>echo $?</code> to see
+if you get the number you changed it to. Then change it back to <code>0</code>, recompile,
+and make sure it&rsquo;s back to returning <code>0</code>.</p>
+
+<p>After each step in this tutorial, you will want to recompile <code>kilo.c</code>, see if
+it finds any errors in your code, and then run <code>./kilo</code>. It is easy to forget
+to recompile, and just run <code>./kilo</code>, and wonder why your changes to <code>kilo.c</code>
+don&rsquo;t seem to have any effect. You must recompile in order for changes in
+<code>kilo.c</code> to be reflected in <code>kilo</code>.</p>
+
+<p>In the <a href="02.enteringRawMode.html">next chapter</a>, we&rsquo;ll work on getting the
+terminal into <em>raw mode</em>, and reading individual keypresses from the user.</p>
+
+    </div>
+    <div id="version">
+      <a href="https://github.com/snaptoken/kilo-tutorial/tree/v1.0.0beta11">1.0.0beta11</a>
+      (<a href="https://github.com/snaptoken/kilo-tutorial/blob/master/CHANGELOG.md">changelog</a>)
+    </div>
+    <footer class="bar">
+      <nav>
+        <a href="#">top of page</a>
+      </nav>
+    </footer>
+  </body>
+</html>
+

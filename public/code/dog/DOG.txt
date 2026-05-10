@@ -1,0 +1,288 @@
+
+-------------------------------------------------------------------------------
+
+                         The DOG Programming Language
+                                By Paige Ruten
+                                August 1, 2007
+                                  Version 0.3
+
+-------------------------------------------------------------------------------
+
+In DOG, your program is a set of instructions that are given to a "dog". Each
+instruction is typed on a newline. The dog uses "cookies" to keep track of
+numbers and add/subtract/multiply numbers. There are 3 types of places to store
+cookies in DOG, which are used throughout the program:
+
+   -> dishX: dishes just store single piles of cookies (numbers). Replace X with
+      any number.
+   -> plateX: also store a pile of cookies, but when used before an instruction,
+      it returns 0 if there are 0 cookies and 1 if there are less than 0 or more
+      than 0 cookies (instead of returning the number of cookies on the plate.)
+      Replace X with any number.
+   -> floor: can store an infinite (sort of) pile of cookies, and when taking a
+      pile of cookies from it, the dog just chooses a random pile.
+
+By the way, these cookies have nothing to do with those internet cookies.
+
+Here are the commands:
+
+   -> fetch X
+
+      Replace X with a number and the dog will fetch that number of cookies from
+      the "infinite cookie pile". The cookies will be stored in his mouth, and
+      if there were already cookies in its mouth the two numbers will be added
+      together.
+
+      X can also be replaced by dishX or plateX or floor. The dog won't
+      take the cookies from those places though, instead he'll look at one of
+      those places and see how many cookies there are, and then fetch that
+      number of cookies from the infinite cookie pile.
+
+   -> drop [dishX/plateX/floor]
+
+      The dog drops all the cookies in his mouth into one of the 3 cookie-storing
+      places, adding onto whatever cookies are already there (unless it drops
+      them onto the floor, in which case a new pile of cookies will be made.)
+
+   -> pickup [dishX/plateX/floor]
+
+      Takes all the cookies from one of those 3 places into its mouth, adding
+      onto whatever is already in his mouth. If he picks it up from the floor,
+      it'll only be randomly one of the piles as usual.
+
+   -> eat X
+
+      Subtracts X amount of cookies from the dog's mouth. You can replace X with
+      a number, or dishX/plateX/floor.
+
+      Also, you can just put "eat" without a number or anything, to make the dog
+      eat everything in his mouth (resetting it to 0.)
+
+   -> clear [dishX/plateX/floor]
+
+      Resets one of the dishes or plates to 0. If you clear the floor, ALL piles
+      of cookies are erased.   
+
+   -> die
+
+      Dog dies, ends the program.
+
+   -> take
+
+      Gets input from the user. The user inputs a number, and the dog "takes"
+      that number of cookies from the user into its mouth, adding onto whatever
+      is already there.
+
+   -> show
+
+      Prints out the number of cookies in the dog's mouth. (The dog "shows" the
+      user the cookies.)
+
+   -> give
+
+      Prints out the number of cookies in the dog's mouth and resets the number
+      of cookies in the dog's mouth to 0. (The dog "gives" the user the cookies.)
+
+   -> bark "string"
+
+      Prints the text inbetween the quotes onto the screen. Must use \n to print
+      a newline. (Newlines aren't printed automatically.)
+
+   -> label X
+
+      Replace X with a label name. Use this with the jump instruction.
+
+   -> jump X
+
+      Replace X with the label that you want to jump to.
+
+Any of these commands can have a number or variable (dishX/plateX/floor)
+precede the commands. This number or variable will tell the dog to execute
+that command a certain number of times. For example these two programs would
+print out "Hello":
+
+-----
+bark "He"
+2 bark "l"
+bark "o"
+-----
+
+-----
+fetch 2
+drop dish1
+bark "He"
+dish1 bark "l"
+bark "o"
+-----
+
+To make a sort of "if statement", you can use plate before a command. If the
+number of cookies in plate is less or more than 0, the interpreter will only
+execute the command once even if there are 5 cookies on the plate. If the
+number cookies in plate is 0, the interpreter won't execute the command at all.
+
+Comments are made by starting the line with a 0. In the examples I start
+comments with "0-> " since I think it looks more readable, but you only need to
+start a line with "0".
+
+Here are some example programs:
+
+------ Adding ------
+2 take
+give
+
+------ Subtracting ------
+take
+drop dish1
+take
+drop dish2
+pickup dish1
+eat dish2
+give
+
+------ Multiplying ------
+take
+drop dish1
+take
+drop dish2
+dish1 fetch dish2
+give
+
+------ Rolling a dice ------
+fetch 1
+drop floor
+fetch 2
+drop floor
+fetch 3
+drop floor
+fetch 4
+drop floor
+fetch 5
+drop floor
+fetch 6
+drop floor
+pickup floor
+bark "You rolled a "
+give
+
+------ Countdown ------
+fetch 10
+drop plate1
+label loop
+   pickup plate1
+   show
+   bark " "
+   eat 1
+   drop plate1
+plate1 jump loop
+
+------ 99 bottles of beer ------
+fetch 99
+drop plate1
+label loop
+   pickup plate1
+   show
+   bark " bottles of beer on the wall, "
+   show
+   bark " bottles of beer.\n"
+   bark "Take one down and pass it around, "
+   eat 1
+   show
+   bark " bottles of beer on the wall.\n\n"
+   drop plate1
+plate1 jump loop
+bark "No more bottles of beer on the wall, no more bottles of beer.\n"
+bark "Go to the store and buy some more, 99 bottles of beer on the wall."
+
+------ Fibonacci numbers ------
+0-> This is how many numbers will be shown (has to be at least 4, otherwise it'll be an infinite loop
+fetch 4
+
+0-> Subtract 3 from the above number before storing it, because of the initial two numbers and ending number
+eat 3
+drop plate1
+
+0-> Store the initial two numbers (1 and 1) into dish1 and dish2, and also display them
+fetch 1
+show
+bark ", "
+drop dish1
+fetch 1
+show
+bark ", "
+drop dish2
+label loop
+	0-> Show the next number
+	fetch dish1
+	fetch dish2
+	show
+	bark ", "
+	
+	0-> Temporarily store result in dish3
+	clear dish3
+	drop dish3
+	
+	0-> Store whatever's in dish2 into dish1, and store the result into dish2
+	clear dish1
+	pickup dish2
+	drop dish1
+	pickup dish3
+	drop dish2
+	
+	0-> Decrement plate1
+	pickup plate1
+	eat 1
+	drop plate1
+plate1 jump loop
+
+0-> Show the last number outside the loop (otherwise a comma would be printed after it)
+fetch dish1
+fetch dish2
+show
+
+------ Adding test ------
+0-> Store numbers 1 to 100 on the floor
+fetch 100
+drop plate1
+label loop
+	pickup plate1
+	drop dish1
+	fetch dish1
+	drop floor
+	pickup dish1
+	eat 1
+	drop plate1
+plate1 jump loop
+
+0-> Reset dish1 and dog's mouth to 0
+pickup dish1
+eat
+
+0-> Store the random numbers into dish1 and dish2
+fetch floor
+drop dish1
+fetch floor
+drop dish2
+
+0-> Write the question "What is x + y?"
+bark "What is "
+fetch dish1
+give
+bark " + "
+fetch dish2
+give
+bark "? "
+
+0-> Get the answer, store it in dish3
+fetch dish1
+fetch dish2
+drop dish3
+
+0-> Take user's guess
+take
+
+0-> Check if it's right by subtracting the real answer from their guess and checking if the result is 0
+eat dish3
+drop plate1
+plate1 bark "Wrong!"
+	plate1 die
+bark "Right!"

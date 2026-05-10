@@ -1,0 +1,44 @@
+0-> This is how many numbers will be shown (has to be at least 4, otherwise it'll be an infinite loop
+fetch 4
+
+0-> Subtract 3 from the above number before storing it, because of the initial two numbers and ending number
+eat 3
+drop plate1
+
+0-> Store the initial two numbers (1 and 1) into dish1 and dish2, and also display them
+fetch 1
+show
+bark ", "
+drop dish1
+fetch 1
+show
+bark ", "
+drop dish2
+label loop
+	0-> Show the next number
+	fetch dish1
+	fetch dish2
+	show
+	bark ", "
+	
+	0-> Temporarily store result in dish3
+	clear dish3
+	drop dish3
+	
+	0-> Store whatever's in dish2 into dish1, and store the result into dish2
+	clear dish1
+	pickup dish2
+	drop dish1
+	pickup dish3
+	drop dish2
+	
+	0-> Decrement plate1
+	pickup plate1
+	eat 1
+	drop plate1
+plate1 jump loop
+
+0-> Show the last number outside the loop (otherwise a comma would be printed after it)
+fetch dish1
+fetch dish2
+show

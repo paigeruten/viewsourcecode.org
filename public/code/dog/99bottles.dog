@@ -1,0 +1,16 @@
+fetch 99
+drop plate1
+label loop
+	pickup plate1
+	show
+	bark " bottles of beer on the wall, "
+	show
+	bark " bottles of beer.\n"
+	bark "Take one down and pass it around, "
+	eat 1
+	show
+	bark " bottles of beer on the wall.\n\n"
+	drop plate1
+plate1 jump loop
+bark "No more bottles of beer on the wall, no more bottles of beer.\n"
+bark "Go to the store and buy some more, 99 bottles of beer on the wall."

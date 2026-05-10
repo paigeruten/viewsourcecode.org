@@ -1,0 +1,6 @@
+take
+drop dish1
+take
+drop dish2
+dish1 fetch dish2
+give

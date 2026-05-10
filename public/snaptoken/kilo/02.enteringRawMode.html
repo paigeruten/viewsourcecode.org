@@ -1,0 +1,597 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>2. Entering raw mode | Build Your Own Text Editor</title>
+    <link href="style.css" rel="stylesheet">
+  </head>
+  <body>
+    <header class="bar">
+      <nav>
+        <a href='01.setup.html'>&larr; prev</a>
+        <a href="index.html">contents</a>
+        <a href='03.rawInputAndOutput.html'>next &rarr;</a>
+      </nav>
+    </header>
+    <div id="container">
+      <h1 id="entering-raw-mode">Entering raw mode</h1>
+
+<p>Let&rsquo;s try and read keypresses from the user. (The lines you need to add are
+highlighted and marked with arrows.)</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/read/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 3</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/read">read</a></div>
+</div><pre class="highlight"><code><ins class="line"><span class="cp">#include &lt;unistd.h&gt;</span></ins><div class="line"></div><div class="line"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span></div><ins class="line">  <span class="kt">char</span> <span class="n">c</span><span class="p">;</span></ins><ins class="line">  <span class="k">while</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">);</span></ins><div class="line">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span></div><div class="line"><span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p><code>read()</code> and <code>STDIN_FILENO</code> come from <code>&lt;unistd.h&gt;</code>. We are asking <code>read()</code> to
+read <code>1</code> byte from the standard input into the variable <code>c</code>, and to keep doing
+it until there are no more bytes to read. <code>read()</code> returns the number of bytes
+that it read, and will return <code>0</code> when it reaches the end of a file.</p>
+
+<p>When you run <code>./kilo</code>, your terminal gets hooked up to the standard input, and
+so your keyboard input gets read into the <code>c</code> variable. However, by default
+your terminal starts in <strong>canonical mode</strong>, also called <strong>cooked mode</strong>. In
+this mode, keyboard input is only sent to your program when the user presses
+<kbd>Enter</kbd>. This is useful for many programs: it lets the user type in a
+line of text, use <kbd>Backspace</kbd> to fix errors until they get their input
+exactly the way they want it, and finally press <kbd>Enter</kbd> to send it to
+the program. But it does not work well for programs with more complex user
+interfaces, like text editors. We want to process each keypress as it comes in,
+so we can respond to it immediately.</p>
+
+<p>What we want is <strong>raw mode</strong>. Unfortunately, there is no simple switch you can
+flip to set the terminal to raw mode. Raw mode is achieved by turning off a
+great many flags in the terminal, which we will do gradually over the course of
+this chapter.</p>
+
+<p>To exit the above program, press <kbd>Ctrl-D</kbd> to tell <code>read()</code> that it&rsquo;s
+reached the end of file. Or you can always press <kbd>Ctrl-C</kbd> to signal
+the process to terminate immediately.</p>
+<h2 id="press-q-to-quit"><a href="#press-q-to-quit">Press <kbd>q</kbd> to quit?</a></h2>
+
+<p>To demonstrate how canonical mode works, we&rsquo;ll have the program exit when it
+reads a <kbd>q</kbd> keypress from the user. (Lines you need to change are
+highlighted and marked the same way as lines you need to add.)</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/press-q/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 4</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/press-q">press-q</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><div class="line"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="kt">char</span> <span class="n">c</span><span class="p">;</span></div><ins class="line">  <span class="k">while</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">c</span> <span class="o">!=</span> <span class="sc">'q'</span><span class="p">);</span></ins><div class="line">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span></div><div class="line"><span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p>To quit this program, you will have to type a line of text that includes a <code>q</code>
+in it, and then press enter. The program will quickly read the line of text one
+character at a time until it reads the <code>q</code>, at which point the <code>while</code> loop
+will stop and the program will exit. Any characters after the <code>q</code> will be left
+unread on the input queue, and you may see that input being fed into your shell
+after your program exits.</p>
+<h2 id="turn-off-echoing"><a href="#turn-off-echoing">Turn off echoing</a></h2>
+
+<p>We can set a terminal&rsquo;s attributes by (1) using <code>tcgetattr()</code> to read the
+current attributes into a struct, (2) modifying the struct by hand, and
+(3) passing the modified struct to <code>tcsetattr()</code> to write the new terminal
+attributes back out. Let&rsquo;s try turning off the <code>ECHO</code> feature this way.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/echo/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 5</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/echo">echo</a></div>
+</div><pre class="highlight"><code><ins class="line"><span class="cp">#include &lt;termios.h&gt;</span></ins><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><ins class="line"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span></ins><ins class="line">  <span class="k">struct</span> <span class="n">termios</span> <span class="n">raw</span><span class="p">;</span></ins><ins class="line"></ins><ins class="line">  <span class="n">tcgetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">raw</span><span class="p">);</span></ins><ins class="line"></ins><ins class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_lflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">ECHO</span><span class="p">);</span></ins><ins class="line"></ins><ins class="line">  <span class="n">tcsetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">raw</span><span class="p">);</span></ins><ins class="line"><span class="p">}</span></ins><div class="line"></div><div class="line"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span></div><ins class="line">  <span class="n">enableRawMode</span><span class="p">();</span></ins><div class="line"></div><div class="line">  <span class="kt">char</span> <span class="n">c</span><span class="p">;</span></div><div class="line">  <span class="k">while</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">c</span> <span class="o">!=</span> <span class="sc">'q'</span><span class="p">);</span></div><div class="line">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span></div><div class="line"><span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p><code>struct termios</code>, <code>tcgetattr()</code>, <code>tcsetattr()</code>, <code>ECHO</code>, and <code>TCSAFLUSH</code> all
+come from <code>&lt;termios.h&gt;</code>.</p>
+
+<p>The <code>ECHO</code> feature causes each key you type to be printed to the terminal, so
+you can see what you&rsquo;re typing. This is useful in canonical mode, but really
+gets in the way when we are trying to carefully render a user interface in raw
+mode. So we turn it off. This program does the same thing as the one in the
+previous step, it just doesn&rsquo;t print what you are typing. You may be familiar
+with this mode if you&rsquo;ve ever had to type a password at the terminal, when
+using <code>sudo</code> for example.</p>
+
+<p>After the program quits, depending on your shell, you may find your terminal is
+still not echoing what you type. Don&rsquo;t worry, it will still listen to what you
+type. Just press <kbd>Ctrl-C</kbd> to start a fresh line of input to your
+shell, and type in <code>reset</code> and press <kbd>Enter</kbd>. This resets your
+terminal back to normal in most cases. Failing that, you can always restart
+your terminal emulator. We&rsquo;ll fix this whole problem in the next step.</p>
+
+<p>Terminal attributes can be read into a <code>termios</code> struct by <code>tcgetattr()</code>. After
+modifying them, you can then apply them to the terminal using <code>tcsetattr()</code>.
+The <code>TCSAFLUSH</code> argument specifies when to apply the change: in this case, it
+waits for all pending output to be written to the terminal, and also discards
+any input that hasn&rsquo;t been read.</p>
+
+<p>The <code>c_lflag</code> field is for &ldquo;local flags&rdquo;. A comment in macOS&rsquo;s <code>&lt;termios.h&gt;</code>
+describes it as a &ldquo;dumping ground for other state&rdquo;. So perhaps it should be
+thought of as &ldquo;miscellaneous flags&rdquo;. The other flag fields are <code>c_iflag</code> (input
+flags), <code>c_oflag</code> (output flags), and <code>c_cflag</code> (control flags), all of which
+we will have to modify to enable raw mode.</p>
+
+<p><code>ECHO</code> is a <a href="https://en.wikipedia.org/wiki/Bit_field">bitflag</a>, defined as
+<code>00000000000000000000000000001000</code> in binary. We use the bitwise-NOT operator
+(<code>~</code>) on this value to get <code>11111111111111111111111111110111</code>. We then
+bitwise-AND this value with the flags field, which forces the fourth bit in the
+flags field to become <code>0</code>, and causes every other bit to retain its current
+value. Flipping bits like this is common in C.</p>
+<h2 id="disable-raw-mode-at-exit"><a href="#disable-raw-mode-at-exit">Disable raw mode at exit</a></h2>
+
+<p>Let&rsquo;s be nice to the user and restore their terminal&rsquo;s original attributes when
+our program exits. We&rsquo;ll save a copy of the <code>termios</code> struct in its original
+state, and use <code>tcsetattr()</code> to apply it to the terminal when the program
+exits.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/atexit/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 6</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/atexit">atexit</a></div>
+</div><pre class="highlight"><code><ins class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></ins><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><ins class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></ins><ins class="line"></ins><ins class="line"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span></ins><ins class="line">  <span class="n">tcsetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">orig_termios</span><span class="p">);</span></ins><ins class="line"><span class="p">}</span></ins><div class="line"></div><div class="line"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span></div><ins class="line">  <span class="n">tcgetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">orig_termios</span><span class="p">);</span></ins><ins class="line">  <span class="n">atexit</span><span class="p">(</span><span class="n">disableRawMode</span><span class="p">);</span></ins><div class="line"></div><ins class="line">  <span class="k">struct</span> <span class="n">termios</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">orig_termios</span><span class="p">;</span></ins><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_lflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">ECHO</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="n">tcsetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">raw</span><span class="p">);</span></div><div class="line"><span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p><code>atexit()</code> comes from <code>&lt;stdlib.h&gt;</code>. We use it to register our
+<code>disableRawMode()</code> function to be called automatically when the program exits,
+whether it exits by returning from <code>main()</code>, or by calling the <code>exit()</code>
+function. This way we can ensure we&rsquo;ll leave the terminal attributes the way
+we found them when our program exits.</p>
+
+<p>We store the original terminal attributes in a global variable, <code>orig_termios</code>.
+We assign the <code>orig_termios</code> struct to the <code>raw</code> struct in order to make a copy
+of it before we start making our changes.</p>
+
+<p>You may notice that leftover input is no longer fed into your shell after the
+program quits. This is because of the <code>TCSAFLUSH</code> option being passed to
+<code>tcsetattr()</code> when the program exits. As described earlier, it discards any
+unread input before applying the changes to the terminal. (Note: This doesn&rsquo;t
+happen in Cygwin for some reason, but it won&rsquo;t matter once we are reading input
+one byte at a time.)</p>
+<h2 id="turn-off-canonical-mode"><a href="#turn-off-canonical-mode">Turn off canonical mode</a></h2>
+
+<p>There is an <code>ICANON</code> flag that allows us to turn off canonical mode. This means
+we will finally be reading input byte-by-byte, instead of line-by-line.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/icanon/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 7</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/icanon">icanon</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><div class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="n">tcgetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">orig_termios</span><span class="p">);</span></div><div class="line">  <span class="n">atexit</span><span class="p">(</span><span class="n">disableRawMode</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="k">struct</span> <span class="n">termios</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">orig_termios</span><span class="p">;</span></div><ins class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_lflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">ECHO</span> <span class="o">|</span> <span class="n">ICANON</span><span class="p">);</span></ins><div class="line"></div><div class="line">  <span class="n">tcsetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">raw</span><span class="p">);</span></div><div class="line"><span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p><code>ICANON</code> comes from <code>&lt;termios.h&gt;</code>. Input flags (the ones in the <code>c_iflag</code>
+field) generally start with <code>I</code> like <code>ICANON</code> does. However, <code>ICANON</code> is not an
+input flag, it&rsquo;s a &ldquo;local&rdquo; flag in the <code>c_lflag</code> field. So that&rsquo;s confusing.</p>
+
+<p>Now the program will quit as soon as you press <kbd>q</kbd>.</p>
+<h2 id="display-keypresses"><a href="#display-keypresses">Display keypresses</a></h2>
+
+<p>To get a better idea of how input in raw mode works, let&rsquo;s print out each byte
+that we <code>read()</code>. We&rsquo;ll print each character&rsquo;s numeric ASCII value, as well as
+the character it represents if it is a printable character.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/keypresses/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 8</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/keypresses">keypresses</a></div>
+</div><pre class="highlight"><code><ins class="line"><span class="cp">#include &lt;ctype.h&gt;</span></ins><ins class="line"><span class="cp">#include &lt;stdio.h&gt;</span></ins><div class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><div class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="n">enableRawMode</span><span class="p">();</span></div><div class="line"></div><div class="line">  <span class="kt">char</span> <span class="n">c</span><span class="p">;</span></div><ins class="line">  <span class="k">while</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">c</span> <span class="o">!=</span> <span class="sc">'q'</span><span class="p">)</span> <span class="p">{</span></ins><ins class="line">    <span class="k">if</span> <span class="p">(</span><span class="n">iscntrl</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="p">{</span></ins><ins class="line">      <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span></ins><ins class="line">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></ins><ins class="line">      <span class="n">printf</span><span class="p">(</span><span class="s">"%d ('%c')</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span></ins><ins class="line">    <span class="p">}</span></ins><ins class="line">  <span class="p">}</span></ins><div class="line"></div><div class="line">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span></div><div class="line"><span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p><code>iscntrl()</code> comes from <code>&lt;ctype.h&gt;</code>, and <code>printf()</code> comes from <code>&lt;stdio.h&gt;</code>.</p>
+
+<p><code>iscntrl()</code> tests whether a character is a control character. Control
+characters are nonprintable characters that we don&rsquo;t want to print to the
+screen. ASCII codes 0&ndash;31 are all control characters, and 127 is also a
+control character. ASCII codes 32&ndash;126 are all printable. (Check out the
+<a href="http://asciitable.com">ASCII table</a> to see all of the characters.)</p>
+
+<p><code>printf()</code> can print multiple representations of a byte. <code>%d</code> tells it to
+format the byte as a decimal number (its ASCII code), and <code>%c</code> tells it to
+write out the byte directly, as a character.</p>
+
+<p>This is a very useful program. It shows us how various keypresses translate
+into the bytes we read. Most ordinary keys translate directly into the
+characters they represent. But try seeing what happens when you press the arrow
+keys, or <kbd>Escape</kbd>, or <kbd>Page Up</kbd>, or <kbd>Page Down</kbd>, or
+<kbd>Home</kbd>, or <kbd>End</kbd>, or <kbd>Backspace</kbd>, or
+<kbd>Delete</kbd>, or <kbd>Enter</kbd>. Try key combinations with
+<kbd>Ctrl</kbd>, like <kbd>Ctrl-A</kbd>, <kbd>Ctrl-B</kbd>, etc.</p>
+
+<p>You&rsquo;ll notice a few interesting things:</p>
+
+<ul>
+<li>Arrow keys, <kbd>Page Up</kbd>, <kbd>Page Down</kbd>, <kbd>Home</kbd>, and
+<kbd>End</kbd> all input 3 or 4 bytes to the terminal: <code>27</code>, <code>&#39;[&#39;</code>, and then
+one or two other characters. This is known as an <em>escape sequence</em>. All
+escape sequences start with a <code>27</code> byte. Pressing <kbd>Escape</kbd> sends a
+single <code>27</code> byte as input.</li>
+<li><kbd>Backspace</kbd> is byte <code>127</code>. <kbd>Delete</kbd> is a 4-byte escape
+sequence.</li>
+<li><kbd>Enter</kbd> is byte <code>10</code>, which is a newline character, also known as
+<code>&#39;\n&#39;</code>.</li>
+<li><kbd>Ctrl-A</kbd> is <code>1</code>, <kbd>Ctrl-B</kbd> is <code>2</code>, <kbd>Ctrl-C</kbd> is&hellip;
+oh, that terminates the program, right. But the <kbd>Ctrl</kbd> key
+combinations that do work seem to map the letters A&ndash;Z to the codes
+1&ndash;26.</li>
+</ul>
+
+<p>By the way, if you happen to press <kbd>Ctrl-S</kbd>, you may find your program
+seems to be frozen. What you&rsquo;ve done is you&rsquo;ve asked your program to <a href="https://en.wikipedia.org/wiki/Software_flow_control">stop
+sending you output</a>. Press
+<kbd>Ctrl-Q</kbd> to tell it to resume sending you output.</p>
+
+<p>Also, if you press <kbd>Ctrl-Z</kbd> (or maybe <kbd>Ctrl-Y</kbd>), your program
+will be suspended to the background. Run the <code>fg</code> command to bring it back to
+the foreground. (It may quit immediately after you do that, as a result of
+<code>read()</code> returning <code>-1</code> to indicate that an error occurred. This happens on
+macOS, while Linux seems to be able to resume the <code>read()</code> call properly.)</p>
+<h2 id="turn-off-ctrl-c-and-ctrl-z-signals"><a href="#turn-off-ctrl-c-and-ctrl-z-signals">Turn off <kbd>Ctrl-C</kbd> and <kbd>Ctrl-Z</kbd> signals</a></h2>
+
+<p>By default, <kbd>Ctrl-C</kbd> sends a <code>SIGINT</code> signal to the current process
+which causes it to terminate, and <kbd>Ctrl-Z</kbd> sends a <code>SIGTSTP</code> signal to
+the current process which causes it to suspend. Let&rsquo;s turn off the sending of
+both of these signals.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/isig/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 9</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/isig">isig</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="cp">#include &lt;ctype.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><div class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="n">tcgetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">orig_termios</span><span class="p">);</span></div><div class="line">  <span class="n">atexit</span><span class="p">(</span><span class="n">disableRawMode</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="k">struct</span> <span class="n">termios</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">orig_termios</span><span class="p">;</span></div><ins class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_lflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">ECHO</span> <span class="o">|</span> <span class="n">ICANON</span> <span class="o">|</span> <span class="n">ISIG</span><span class="p">);</span></ins><div class="line"></div><div class="line">  <span class="n">tcsetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">raw</span><span class="p">);</span></div><div class="line"><span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p><code>ISIG</code> comes from <code>&lt;termios.h&gt;</code>. Like <code>ICANON</code>, it starts with <code>I</code> but isn&rsquo;t an
+input flag.</p>
+
+<p>Now <kbd>Ctrl-C</kbd> can be read as a <code>3</code> byte and <kbd>Ctrl-Z</kbd> can be
+read as a <code>26</code> byte.</p>
+
+<p>This also disables <kbd>Ctrl-Y</kbd> on macOS, which is like <kbd>Ctrl-Z</kbd>
+except it waits for the program to read input before suspending it.</p>
+<h2 id="disable-ctrl-s-and-ctrl-q"><a href="#disable-ctrl-s-and-ctrl-q">Disable <kbd>Ctrl-S</kbd> and <kbd>Ctrl-Q</kbd></a></h2>
+
+<p>By default, <kbd>Ctrl-S</kbd> and <kbd>Ctrl-Q</kbd> are used for
+<a href="https://en.wikipedia.org/wiki/Software_flow_control">software flow control</a>.
+<kbd>Ctrl-S</kbd> stops data from being transmitted to the terminal until you
+press <kbd>Ctrl-Q</kbd>. This originates in the days when you might want to
+pause the transmission of data to let a device like a printer catch up. Let&rsquo;s
+just turn off that feature.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/ixon/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 10</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/ixon">ixon</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="cp">#include &lt;ctype.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><div class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="n">tcgetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">orig_termios</span><span class="p">);</span></div><div class="line">  <span class="n">atexit</span><span class="p">(</span><span class="n">disableRawMode</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="k">struct</span> <span class="n">termios</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">orig_termios</span><span class="p">;</span></div><ins class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_iflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">IXON</span><span class="p">);</span></ins><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_lflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">ECHO</span> <span class="o">|</span> <span class="n">ICANON</span> <span class="o">|</span> <span class="n">ISIG</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="n">tcsetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">raw</span><span class="p">);</span></div><div class="line"><span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p><code>IXON</code> comes from <code>&lt;termios.h&gt;</code>. The <code>I</code> stands for &ldquo;input flag&rdquo; (which it is,
+unlike the other <code>I</code> flags we&rsquo;ve seen so far) and <code>XON</code> comes from the names of
+the two control characters that <kbd>Ctrl-S</kbd> and <kbd>Ctrl-Q</kbd>
+produce: <code>XOFF</code> to pause transmission and <code>XON</code> to resume transmission.</p>
+
+<p>Now <kbd>Ctrl-S</kbd> can be read as a <code>19</code> byte and <kbd>Ctrl-Q</kbd> can be
+read as a <code>17</code> byte.</p>
+<h2 id="disable-ctrl-v"><a href="#disable-ctrl-v">Disable <kbd>Ctrl-V</kbd></a></h2>
+
+<p>On some systems, when you type <kbd>Ctrl-V</kbd>, the terminal waits for you to
+type another character and then sends that character literally. For example,
+before we disabled <kbd>Ctrl-C</kbd>, you might&rsquo;ve been able to type
+<kbd>Ctrl-V</kbd> and then <kbd>Ctrl-C</kbd> to input a <code>3</code> byte. We can turn
+off this feature using the <code>IEXTEN</code> flag.</p>
+
+<p>Turning off <code>IEXTEN</code> also fixes <kbd>Ctrl-O</kbd> in macOS, whose terminal
+driver is otherwise set to discard that control character.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/iexten/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 11</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/iexten">iexten</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="cp">#include &lt;ctype.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><div class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="n">tcgetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">orig_termios</span><span class="p">);</span></div><div class="line">  <span class="n">atexit</span><span class="p">(</span><span class="n">disableRawMode</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="k">struct</span> <span class="n">termios</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_iflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">IXON</span><span class="p">);</span></div><ins class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_lflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">ECHO</span> <span class="o">|</span> <span class="n">ICANON</span> <span class="o">|</span> <span class="n">IEXTEN</span> <span class="o">|</span> <span class="n">ISIG</span><span class="p">);</span></ins><div class="line"></div><div class="line">  <span class="n">tcsetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">raw</span><span class="p">);</span></div><div class="line"><span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p><code>IEXTEN</code> comes from <code>&lt;termios.h&gt;</code>. It is another flag that starts with <code>I</code> but
+belongs in the <code>c_lflag</code> field.</p>
+
+<p><kbd>Ctrl-V</kbd> can now be read as a <code>22</code> byte, and <kbd>Ctrl-O</kbd> as a
+<code>15</code> byte.</p>
+<h2 id="fix-ctrl-m"><a href="#fix-ctrl-m">Fix <kbd>Ctrl-M</kbd></a></h2>
+
+<p>If you run the program now and go through the whole alphabet while holding down
+<kbd>Ctrl</kbd>, you should see that we have every letter except <kbd>M</kbd>.
+<kbd>Ctrl-M</kbd> is weird: it&rsquo;s being read as <code>10</code>, when we expect it to be
+read as <code>13</code>, since it is the 13th letter of the alphabet, and
+<kbd>Ctrl-J</kbd> already produces a <code>10</code>. What else produces <code>10</code>? The
+<kbd>Enter</kbd> key does.</p>
+
+<p>It turns out that the terminal is helpfully translating any carriage returns
+(<code>13</code>, <code>&#39;\r&#39;</code>) inputted by the user into newlines (<code>10</code>, <code>&#39;\n&#39;</code>). Let&rsquo;s turn
+off this feature.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/icrnl/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 12</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/icrnl">icrnl</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="cp">#include &lt;ctype.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><div class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="n">tcgetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">orig_termios</span><span class="p">);</span></div><div class="line">  <span class="n">atexit</span><span class="p">(</span><span class="n">disableRawMode</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="k">struct</span> <span class="n">termios</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">orig_termios</span><span class="p">;</span></div><ins class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_iflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">ICRNL</span> <span class="o">|</span> <span class="n">IXON</span><span class="p">);</span></ins><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_lflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">ECHO</span> <span class="o">|</span> <span class="n">ICANON</span> <span class="o">|</span> <span class="n">IEXTEN</span> <span class="o">|</span> <span class="n">ISIG</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="n">tcsetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">raw</span><span class="p">);</span></div><div class="line"><span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p><code>ICRNL</code> comes from <code>&lt;termios.h&gt;</code>. The <code>I</code> stands for &ldquo;input flag&rdquo;, <code>CR</code> stands
+for &ldquo;carriage return&rdquo;, and <code>NL</code> stands for &ldquo;new line&rdquo;.</p>
+
+<p>Now <kbd>Ctrl-M</kbd> is read as a <code>13</code> (carriage return), and the
+<kbd>Enter</kbd> key is also read as a <code>13</code>.</p>
+<h2 id="turn-off-all-output-processing"><a href="#turn-off-all-output-processing">Turn off all output processing</a></h2>
+
+<p>It turns out that the terminal does a similar translation on the output side.
+It translates each newline (<code>&quot;\n&quot;</code>) we print into a carriage return followed by
+a newline (<code>&quot;\r\n&quot;</code>). The terminal requires both of these characters in order
+to start a new line of text. The carriage return moves the cursor back to the
+beginning of the current line, and the newline moves the cursor down a line,
+scrolling the screen if necessary. (These two distinct operations originated in
+the days of typewriters and
+<a href="https://en.wikipedia.org/wiki/Teleprinter">teletypes</a>.)</p>
+
+<p>We will turn off all output processing features by turning off the <code>OPOST</code>
+flag. In practice, the <code>&quot;\n&quot;</code> to <code>&quot;\r\n&quot;</code> translation is likely the only output
+processing feature turned on by default.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/opost/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 13</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/opost">opost</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="cp">#include &lt;ctype.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><div class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="n">tcgetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">orig_termios</span><span class="p">);</span></div><div class="line">  <span class="n">atexit</span><span class="p">(</span><span class="n">disableRawMode</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="k">struct</span> <span class="n">termios</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_iflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">ICRNL</span> <span class="o">|</span> <span class="n">IXON</span><span class="p">);</span></div><ins class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_oflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">OPOST</span><span class="p">);</span></ins><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_lflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">ECHO</span> <span class="o">|</span> <span class="n">ICANON</span> <span class="o">|</span> <span class="n">IEXTEN</span> <span class="o">|</span> <span class="n">ISIG</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="n">tcsetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">raw</span><span class="p">);</span></div><div class="line"><span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p><code>OPOST</code> comes from <code>&lt;termios.h&gt;</code>. <code>O</code> means it&rsquo;s an output flag, and I assume
+<code>POST</code> stands for &ldquo;post-processing of output&rdquo;.</p>
+
+<p>If you run the program now, you&rsquo;ll see that the newline characters we&rsquo;re
+printing are only moving the cursor down, and not to the left side of the
+screen. To fix that, let&rsquo;s add carriage returns to our <code>printf()</code> statements.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/carriage-returns/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 14</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/carriage-returns">carriage-returns</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="cp">#include &lt;ctype.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><div class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="n">enableRawMode</span><span class="p">();</span></div><div class="line"></div><div class="line">  <span class="kt">char</span> <span class="n">c</span><span class="p">;</span></div><div class="line">  <span class="k">while</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">c</span> <span class="o">!=</span> <span class="sc">'q'</span><span class="p">)</span> <span class="p">{</span></div><div class="line">    <span class="k">if</span> <span class="p">(</span><span class="n">iscntrl</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="p">{</span></div><ins class="line">      <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span></ins><div class="line">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></div><ins class="line">      <span class="n">printf</span><span class="p">(</span><span class="s">"%d ('%c')</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span></ins><div class="line">    <span class="p">}</span></div><div class="line">  <span class="p">}</span></div><div class="line"></div><div class="line">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span></div><div class="line"><span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p>From now on, we&rsquo;ll have to write out the full <code>&quot;\r\n&quot;</code> whenever we want
+to start a new line.</p>
+<h2 id="miscellaneous-flags"><a href="#miscellaneous-flags">Miscellaneous flags</a></h2>
+
+<p>Let&rsquo;s turn off a few more flags.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/misc-flags/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 15</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/misc-flags">misc-flags</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="cp">#include &lt;ctype.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><div class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="n">tcgetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">orig_termios</span><span class="p">);</span></div><div class="line">  <span class="n">atexit</span><span class="p">(</span><span class="n">disableRawMode</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="k">struct</span> <span class="n">termios</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">orig_termios</span><span class="p">;</span></div><ins class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_iflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">BRKINT</span> <span class="o">|</span> <span class="n">ICRNL</span> <span class="o">|</span> <span class="n">INPCK</span> <span class="o">|</span> <span class="n">ISTRIP</span> <span class="o">|</span> <span class="n">IXON</span><span class="p">);</span></ins><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_oflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">OPOST</span><span class="p">);</span></div><ins class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_cflag</span> <span class="o">|=</span> <span class="p">(</span><span class="n">CS8</span><span class="p">);</span></ins><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_lflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">ECHO</span> <span class="o">|</span> <span class="n">ICANON</span> <span class="o">|</span> <span class="n">IEXTEN</span> <span class="o">|</span> <span class="n">ISIG</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="n">tcsetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">raw</span><span class="p">);</span></div><div class="line"><span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c1">♎&#xFE0E; compiles, but with no observable effects</div>
+</div>
+</div>
+
+
+<p><code>BRKINT</code>, <code>INPCK</code>, <code>ISTRIP</code>, and <code>CS8</code> all come from <code>&lt;termios.h&gt;</code>.</p>
+
+<p>This step probably won&rsquo;t have any observable effect for you, because these
+flags are either already turned off, or they don&rsquo;t really apply to modern
+terminal emulators. But at one time or another, switching them off was
+considered (by someone) to be part of enabling &ldquo;raw mode&rdquo;, so we carry on the
+tradition (of whoever that someone was) in our program.</p>
+
+<p>As far as I can tell:</p>
+
+<ul>
+<li>When <code>BRKINT</code> is turned on, a
+<a href="https://www.cmrr.umn.edu/%7Estrupp/serial.html#2_3_3">break condition</a> will
+cause a <code>SIGINT</code> signal to be sent to the program, like pressing <code>Ctrl-C</code>.</li>
+<li><code>INPCK</code> enables parity checking, which doesn&rsquo;t seem to apply to modern
+terminal emulators.</li>
+<li><code>ISTRIP</code> causes the 8th bit of each input byte to be stripped, meaning it
+will set it to <code>0</code>. This is probably already turned off.</li>
+<li><code>CS8</code> is not a flag, it is a bit mask with multiple bits, which we set using
+the bitwise-OR (<code>|</code>) operator unlike all the flags we are turning off. It
+sets the character size (CS) to 8 bits per byte. On my system, it&rsquo;s already
+set that way.</li>
+</ul>
+<h2 id="a-timeout-for-read"><a href="#a-timeout-for-read">A timeout for <code>read()</code></a></h2>
+
+<p>Currently, <code>read()</code> will wait indefinitely for input from the keyboard before
+it returns. What if we want to do something like animate something on the
+screen while waiting for user input? We can set a timeout, so that <code>read()</code>
+returns if it doesn&rsquo;t get any input for a certain amount of time.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/vmin-vtime/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 16</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/vmin-vtime">vmin-vtime</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="cp">#include &lt;ctype.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><div class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="n">tcgetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">orig_termios</span><span class="p">);</span></div><div class="line">  <span class="n">atexit</span><span class="p">(</span><span class="n">disableRawMode</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="k">struct</span> <span class="n">termios</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_iflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">BRKINT</span> <span class="o">|</span> <span class="n">ICRNL</span> <span class="o">|</span> <span class="n">INPCK</span> <span class="o">|</span> <span class="n">ISTRIP</span> <span class="o">|</span> <span class="n">IXON</span><span class="p">);</span></div><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_oflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">OPOST</span><span class="p">);</span></div><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_cflag</span> <span class="o">|=</span> <span class="p">(</span><span class="n">CS8</span><span class="p">);</span></div><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_lflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">ECHO</span> <span class="o">|</span> <span class="n">ICANON</span> <span class="o">|</span> <span class="n">IEXTEN</span> <span class="o">|</span> <span class="n">ISIG</span><span class="p">);</span></div><ins class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_cc</span><span class="p">[</span><span class="n">VMIN</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span></ins><ins class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_cc</span><span class="p">[</span><span class="n">VTIME</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span></ins><div class="line"></div><div class="line">  <span class="n">tcsetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">raw</span><span class="p">);</span></div><div class="line"><span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="n">enableRawMode</span><span class="p">();</span></div><div class="line"></div><ins class="line">  <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span></ins><ins class="line">    <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span></ins><ins class="line">    <span class="n">read</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span></ins><div class="line">    <span class="k">if</span> <span class="p">(</span><span class="n">iscntrl</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="p">{</span></div><div class="line">      <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span></div><div class="line">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></div><div class="line">      <span class="n">printf</span><span class="p">(</span><span class="s">"%d ('%c')</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span></div><div class="line">    <span class="p">}</span></div><ins class="line">    <span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">'q'</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span></ins><div class="line">  <span class="p">}</span></div><div class="line"></div><div class="line">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span></div><div class="line"><span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p><code>VMIN</code> and <code>VTIME</code> come from <code>&lt;termios.h&gt;</code>. They are indexes into the <code>c_cc</code>
+field, which stands for &ldquo;control characters&rdquo;, an array of bytes that control
+various terminal settings.</p>
+
+<p>The <code>VMIN</code> value sets the minimum number of bytes of input needed before
+<code>read()</code> can return. We set it to <code>0</code> so that <code>read()</code> returns as soon as there
+is any input to be read. The <code>VTIME</code> value sets the maximum amount of time to
+wait before <code>read()</code> returns. It is in tenths of a second, so we set it to 1/10
+of a second, or 100 milliseconds. If <code>read()</code> times out, it will return <code>0</code>,
+which makes sense because its usual return value is the number of bytes read.</p>
+
+<p>When you run the program, you can see how often <code>read()</code> times out. If you
+don&rsquo;t supply any input, <code>read()</code> returns without setting the <code>c</code> variable,
+which retains its <code>0</code> value and so you see <code>0</code>s getting printed out. If you
+type really fast, you can see that <code>read()</code> returns right away after each
+keypress, so it&rsquo;s not like you can only read one keypress every tenth of a
+second.</p>
+
+<p>If you&rsquo;re using <strong>Bash on Windows</strong>, you may see that <code>read()</code> still blocks for
+input. It doesn&rsquo;t seem to care about the <code>VTIME</code> value. Fortunately, this won&rsquo;t
+make too big a difference in our text editor, as we&rsquo;ll be basically blocking
+for input anyways.</p>
+<h2 id="error-handling"><a href="#error-handling">Error handling</a></h2>
+
+<p><code>enableRawMode()</code> now gets us fully into raw mode. It&rsquo;s time to clean up the
+code by adding some error handling.</p>
+
+<p>First, we&rsquo;ll add a <code>die()</code> function that prints an error message and exits the
+program.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/die/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 17</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/die">die</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="cp">#include &lt;ctype.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><div class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line"></div><ins class="line"><span class="kt">void</span> <span class="nf">die</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">)</span> <span class="p">{</span></ins><ins class="line">  <span class="n">perror</span><span class="p">(</span><span class="n">s</span><span class="p">);</span></ins><ins class="line">  <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span></ins><ins class="line"><span class="p">}</span></ins><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c1">♎&#xFE0E; compiles, but with no observable effects</div>
+</div>
+</div>
+
+
+<p><code>perror()</code> comes from <code>&lt;stdio.h&gt;</code>, and <code>exit()</code> comes from <code>&lt;stdlib.h&gt;</code>.</p>
+
+<p>Most C library functions that fail will set the global <code>errno</code> variable to
+indicate what the error was. <code>perror()</code> looks at the global <code>errno</code> variable
+and prints a descriptive error message for it. It also prints the string given
+to it before it prints the error message, which is meant to provide context
+about what part of your code caused the error.</p>
+
+<p>After printing out the error message, we exit the program with an exit status
+of <code>1</code>, which indicates failure (as would any non-zero value).</p>
+
+<p>Let&rsquo;s check each of our library calls for failure, and call <code>die()</code> when they
+fail.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/error-handling/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 18</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/error-handling">error-handling</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="cp">#include &lt;ctype.h&gt;</span></div><ins class="line"><span class="cp">#include &lt;errno.h&gt;</span></ins><div class="line"><span class="cp">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><div class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">die</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">)</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span></div><ins class="line">  <span class="k">if</span> <span class="p">(</span><span class="n">tcsetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">orig_termios</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></ins><ins class="line">    <span class="n">die</span><span class="p">(</span><span class="s">"tcsetattr"</span><span class="p">);</span></ins><div class="line"><span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span></div><ins class="line">  <span class="k">if</span> <span class="p">(</span><span class="n">tcgetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">orig_termios</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">die</span><span class="p">(</span><span class="s">"tcgetattr"</span><span class="p">);</span></ins><div class="line">  <span class="n">atexit</span><span class="p">(</span><span class="n">disableRawMode</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="k">struct</span> <span class="n">termios</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_iflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">BRKINT</span> <span class="o">|</span> <span class="n">ICRNL</span> <span class="o">|</span> <span class="n">INPCK</span> <span class="o">|</span> <span class="n">ISTRIP</span> <span class="o">|</span> <span class="n">IXON</span><span class="p">);</span></div><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_oflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">OPOST</span><span class="p">);</span></div><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_cflag</span> <span class="o">|=</span> <span class="p">(</span><span class="n">CS8</span><span class="p">);</span></div><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_lflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">ECHO</span> <span class="o">|</span> <span class="n">ICANON</span> <span class="o">|</span> <span class="n">IEXTEN</span> <span class="o">|</span> <span class="n">ISIG</span><span class="p">);</span></div><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_cc</span><span class="p">[</span><span class="n">VMIN</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span></div><div class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_cc</span><span class="p">[</span><span class="n">VTIME</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span></div><div class="line"></div><ins class="line">  <span class="k">if</span> <span class="p">(</span><span class="n">tcsetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">raw</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">die</span><span class="p">(</span><span class="s">"tcsetattr"</span><span class="p">);</span></ins><div class="line"><span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="n">enableRawMode</span><span class="p">();</span></div><div class="line"></div><div class="line">  <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span></div><div class="line">    <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span></div><ins class="line">    <span class="k">if</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">errno</span> <span class="o">!=</span> <span class="n">EAGAIN</span><span class="p">)</span> <span class="n">die</span><span class="p">(</span><span class="s">"read"</span><span class="p">);</span></ins><div class="line">    <span class="k">if</span> <span class="p">(</span><span class="n">iscntrl</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="p">{</span></div><div class="line">      <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span></div><div class="line">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></div><div class="line">      <span class="n">printf</span><span class="p">(</span><span class="s">"%d ('%c')</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span></div><div class="line">    <span class="p">}</span></div><div class="line">    <span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">'q'</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span></div><div class="line">  <span class="p">}</span></div><div class="line"></div><div class="line">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span></div><div class="line"><span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p><code>errno</code> and <code>EAGAIN</code> come from <code>&lt;errno.h&gt;</code>.</p>
+
+<p><code>tcsetattr()</code>, <code>tcgetattr()</code>, and <code>read()</code> all return <code>-1</code> on failure, and set
+the <code>errno</code> value to indicate the error.</p>
+
+<p>In Cygwin, when <code>read()</code> times out it returns <code>-1</code> with an <code>errno</code> of <code>EAGAIN</code>,
+instead of just returning <code>0</code> like it&rsquo;s supposed to. To make it work in Cygwin,
+we won&rsquo;t treat <code>EAGAIN</code> as an error.</p>
+
+<p>An easy way to make <code>tcgetattr()</code> fail is to give your program a text file or a
+pipe as the standard input instead of your terminal. To give it a file as
+standard input, run <code>./kilo &lt;kilo.c</code>. To give it a pipe, run
+<code>echo test | ./kilo</code>. Both should result in the same error from <code>tcgetattr()</code>,
+something like <code>Inappropriate ioctl for device</code>.</p>
+<h2 id="sections"><a href="#sections">Sections</a></h2>
+
+<p>That just about concludes this chapter on entering raw mode. The last thing
+we&rsquo;ll do now is split our code into sections. This will allow these diffs to be
+shorter, as each section that isn&rsquo;t changed in a diff will be folded into a
+single line.</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/sections/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 19</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/sections">sections</a></div>
+</div><pre class="highlight"><code><ins class="line"><span class="cm">/*** includes ***/</span></ins><div class="line"></div><div class="line"><span class="cp">#include &lt;ctype.h&gt;</span></div><div class="line"><span class="cp">#include &lt;errno.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdio.h&gt;</span></div><div class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><ins class="line"><span class="cm">/*** data ***/</span></ins><div class="line"></div><div class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line"></div><ins class="line"><span class="cm">/*** terminal ***/</span></ins><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">die</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">)</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><ins class="line"><span class="cm">/*** init ***/</span></ins><div class="line"></div><div class="line folded"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c1">♎&#xFE0E; compiles, but with no observable effects</div>
+</div>
+</div>
+
+
+<p>In the <a href="03.rawInputAndOutput.html">next chapter</a>, we&rsquo;ll do some more low-level
+terminal input/output handling, and use that to draw to the screen and allow
+the user to move the cursor around.</p>
+
+    </div>
+    <div id="version">
+      <a href="https://github.com/snaptoken/kilo-tutorial/tree/v1.0.0beta11">1.0.0beta11</a>
+      (<a href="https://github.com/snaptoken/kilo-tutorial/blob/master/CHANGELOG.md">changelog</a>)
+    </div>
+    <footer class="bar">
+      <nav>
+        <a href="#">top of page</a>
+      </nav>
+    </footer>
+  </body>
+</html>
+

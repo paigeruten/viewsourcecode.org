@@ -1,0 +1,7 @@
+take
+drop dish1
+take
+drop dish2
+pickup dish1
+eat dish2
+give

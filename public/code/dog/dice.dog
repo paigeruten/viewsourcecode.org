@@ -1,0 +1,15 @@
+fetch 1
+drop floor
+fetch 2
+drop floor
+fetch 3
+drop floor
+fetch 4
+drop floor
+fetch 5
+drop floor
+fetch 6
+drop floor
+pickup floor
+bark "You rolled a "
+give

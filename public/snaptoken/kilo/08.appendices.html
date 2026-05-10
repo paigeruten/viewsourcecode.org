@@ -1,0 +1,246 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>8. Appendices | Build Your Own Text Editor</title>
+    <link href="style.css" rel="stylesheet">
+  </head>
+  <body>
+    <header class="bar">
+      <nav>
+        <a href='07.syntaxHighlighting.html'>&larr; prev</a>
+        <a href="index.html">contents</a>
+        <a href='#'></a>
+      </nav>
+    </header>
+    <div id="container">
+      <h1 id="appendices">Appendices</h1>
+<h2 id="how-the-diffs-work"><a href="#how-the-diffs-work">How the diffs work</a></h2>
+
+<p>Each step in this tutorial is presented as a diff. A diff shows you the changes
+you need to make to the previous step&rsquo;s code to get to the current step. Here&rsquo;s
+a sample diff, from step 7:</p>
+
+<div class="diff">
+<div class="diff-header">
+  <div class="step-filename"><a href="https://github.com/snaptoken/kilo-src/blob/icanon/kilo.c">kilo.c</a></div>
+  <div class="step-number">Step 7</div>
+  <div class="step-name"><a href="https://github.com/snaptoken/kilo-src/tree/icanon">icanon</a></div>
+</div><pre class="highlight"><code><div class="line"><span class="cp">#include &lt;stdlib.h&gt;</span></div><div class="line"><span class="cp">#include &lt;termios.h&gt;</span></div><div class="line"><span class="cp">#include &lt;unistd.h&gt;</span></div><div class="line"></div><div class="line"><span class="k">struct</span> <span class="n">termios</span> <span class="n">orig_termios</span><span class="p">;</span></div><div class="line"></div><div class="line folded"><span class="kt">void</span> <span class="nf">disableRawMode</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div><div class="line"></div><div class="line"><span class="kt">void</span> <span class="nf">enableRawMode</span><span class="p">()</span> <span class="p">{</span></div><div class="line">  <span class="n">tcgetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">orig_termios</span><span class="p">);</span></div><div class="line">  <span class="n">atexit</span><span class="p">(</span><span class="n">disableRawMode</span><span class="p">);</span></div><div class="line"></div><div class="line">  <span class="k">struct</span> <span class="n">termios</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">orig_termios</span><span class="p">;</span></div><ins class="line">  <span class="n">raw</span><span class="p">.</span><span class="n">c_lflag</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="n">ECHO</span> <span class="o">|</span> <span class="n">ICANON</span><span class="p">);</span></ins><div class="line"></div><div class="line">  <span class="n">tcsetattr</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">raw</span><span class="p">);</span></div><div class="line"><span class="p">}</span></div><div class="line"></div><div class="line folded"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> &hellip; <span class="p">}</span></div></code></pre>
+<div class="diff-footer">
+  <div class="diff-tag-c2">♐&#xFE0E; compiles</div>
+</div>
+</div>
+
+
+<p>Each diff starts with a header that contains the filename of the file you need
+to edit (&ldquo;kilo.c&rdquo;), the step number (&ldquo;Step 7&rdquo;), and the step name (&ldquo;icanon&rdquo;).
+You can click the filename to see the full source code of the file for the
+current step on GitHub. You can also click the step name on the far right to
+browse all files for the current step on GitHub (which isn&rsquo;t particularly
+useful for this tutorial, since we&rsquo;re just working on a single source file).</p>
+
+<p>After the header, the contents of the file are shown. Lines that need to be
+added or changed are highlighted and marked with an arrow. Functions that don&rsquo;t
+contain any changed code are folded into a single line with their contents
+hidden.</p>
+
+<p>Lines that need to be removed are given a red background, a
+<s>strike-through</s> style, and are marked with an ✕. Removed lines are not
+shown when they are adjacent to an added or changed line, so you won&rsquo;t see them
+very often.</p>
+
+<p>The bottom of each diff shows you the compile status of that step. If it&rsquo;s
+green and says &ldquo;compiles&rdquo;, then you can expect your code to compile after
+completing the step, and you can expect to be able to observe the change when
+you run the program. If there are no observable changes for that step, then the
+compile status will be blue and say, &ldquo;compiles, but with no observable
+effects&rdquo;. On the rare occasion that the step doesn&rsquo;t compile, it will be red
+and say &ldquo;doesn&rsquo;t compile&rdquo;.</p>
+<h2 id="what-to-do-if-you-are-stuck"><a href="#what-to-do-if-you-are-stuck">What to do if you are stuck</a></h2>
+
+<p>Some of the code in this tutorial is very tricky to type in exactly, especially
+if you&rsquo;re not used to C. It&rsquo;s especially easy to make a mistake when you&rsquo;re
+making a change to a line, and you think you&rsquo;re done changing that line, but
+you missed one little change to another part of that same line. It&rsquo;s important
+to take your time, and compare the changed parts of the diff
+<em>character-by-character</em> with your code to make sure they&rsquo;re the same.</p>
+
+<p>If you suspect you made an error, but don&rsquo;t know where it is or how far back
+you might&rsquo;ve made the error, you should get your computer to do a diff between
+your version of <code>kilo.c</code> and the tutorial&rsquo;s version of <code>kilo.c</code> for whatever
+step you&rsquo;re on. The
+<a href="https://github.com/snaptoken/kilo-src">kilo-src</a> repository contains the
+<code>kilo.c</code> source code for every step in the tutorial.</p>
+
+<p>You will need <code>git</code> to do this. To install <code>git</code> (assuming you&rsquo;ve completed
+<a href="01.setup.html">chapter 1</a>): on <strong>Ubuntu/Bash on Windows</strong>, run
+<code>sudo apt-get install git</code>; on <strong>Cygwin</strong>, run the installer again and select
+the <code>git</code> package for installation; on <strong>macOS</strong>, <code>git</code> should&rsquo;ve been
+installed when you installed command line tools.</p>
+
+<p>Once you have <code>git</code> installed, clone the
+<a href="https://github.com/snaptoken/kilo-src">kilo-src</a> repository by running
+<code>git clone https://github.com/snaptoken/kilo-src</code>. <code>cd</code> into the repo using
+<code>cd kilo-src</code>. The repo has a
+<a href="https://git-scm.com/book/en/v2/Git-Basics-Tagging">tag</a> for each step that
+points the step name to that step&rsquo;s commit in the repo. So to get the source
+code for the step named <code>icanon</code>, run <code>git checkout icanon</code>. The <code>kilo.c</code> file
+will now contain the code for that step. You can compare your <code>kilo.c</code> with
+this <code>kilo.c</code> by running something like
+<code>git diff --no-index -b ../path/to/your/kilo.c kilo.c</code>. This will show you the
+changes you would need to make to your <code>kilo.c</code> to get it to look like the one
+in the repo. The <code>-b</code> option ignores whitespace, so it won&rsquo;t matter if you use
+a different indent style than the one in the tutorial.</p>
+<h2 id="where-to-get-help"><a href="#where-to-get-help">Where to get help</a></h2>
+
+<p>If you are having trouble, feel free to create an
+<a href="https://github.com/snaptoken/kilo-tutorial/issues">issue</a> on the tutorial&rsquo;s
+<a href="https://github.com/snaptoken/kilo-tutorial">GitHub repo</a>, and ask a question.</p>
+
+<p>You can also <a href="mailto:paige.ruten@gmail.com">email me</a> directly if you&rsquo;d rather
+not use GitHub.</p>
+<h2 id="ideas-for-features-to-add-on-your-own"><a href="#ideas-for-features-to-add-on-your-own">Ideas for features to add on your own</a></h2>
+
+<p>If you want to extend <code>kilo</code> on your own, I suggest trying to actually <em>use</em>
+<code>kilo</code> as your text editor for a while. You will very quickly become painfully
+aware of all sorts of features you&rsquo;re used to having in a text editor, but are
+missing in <code>kilo</code>. Those are the features you should try to add. And you should
+use <code>kilo</code> when you work on <code>kilo.c</code>.</p>
+
+<p>If you&rsquo;re still looking for ideas, here&rsquo;s a small list, roughly in order of
+increasing difficulty.</p>
+
+<ul>
+<li><strong>More filetypes</strong>: Add syntax highlighting rules for some of your favourite
+languages to the <code>HLDB</code> array.</li>
+<li><strong>Line numbers</strong>: Display the line number to the left of each line of the
+file.</li>
+<li><strong>Soft indent</strong>: If you like using spaces instead of tabs, make the
+<kbd>Tab</kbd> key insert spaces instead of <code>\t</code>. You may want
+<kbd>Backspace</kbd> to remove a <kbd>Tab</kbd> key&rsquo;s worth of spaces as
+well.</li>
+<li><strong>Auto indent</strong>: When starting a new line, indent it to the same level as the
+previous line.</li>
+<li><strong>Hard-wrap lines</strong>: Insert a newline in the text when the user is about
+to type past the end of the screen. Try not to insert the newline where it
+would split up a word.</li>
+<li><strong>Soft-wrap lines</strong>: When a line is longer than the screen width, use
+multiple lines on the screen to display it instead of horizontal scrolling.</li>
+<li><strong>Use ncurses</strong>: The <a href="https://en.wikipedia.org/wiki/Ncurses">ncurses</a>
+library takes care of a lot of the low level terminal interaction for you,
+and makes your program more portable.</li>
+<li><strong>Copy and paste</strong>: Give the user a way to select text, and then copy the
+selected text when they press <kbd>Ctrl-C</kbd>, and let them paste the
+copied text when they press <kbd>Ctrl-V</kbd>.</li>
+<li><strong>Config file</strong>: Have <code>kilo</code> read a config file (maybe named <code>.kilorc</code>) to
+set options that are currently constants, like <code>KILO_TAB_STOP</code> and
+<code>KILO_QUIT_TIMES</code>. Try to make more things configurable.</li>
+<li><strong>Modal editing</strong>: If you like <a href="http://www.vim.org/">vim</a>, make <code>kilo</code> work
+more like vim by letting the user press <kbd>i</kbd> for &ldquo;insert mode&rdquo; and
+then press <kbd>Escape</kbd> to go back to &ldquo;normal mode&rdquo;. Then start adding
+all your favourite vim commands, starting with the basic movement commands
+(<kbd>h</kbd><kbd>j</kbd><kbd>k</kbd><kbd>l</kbd>).</li>
+<li><strong>Multiple buffers</strong>: Allow having multiple files open at once, and have some
+way of switching between them.</li>
+</ul>
+<h2 id="more-tutorials-like-this"><a href="#more-tutorials-like-this">More tutorials like this</a></h2>
+
+<p>I am planning to make more tutorials like this one. They will all be available
+at <a href="http://viewsourcecode.org/snaptoken">viewsourcecode.org/snaptoken</a>. There
+is a link there that will let you sign up to receive an email whenever a new
+tutorial is available. There is also a list of similar tutorials by other
+people from around the web.</p>
+
+<p>The next tutorials will be a little different from this one. For example, one
+might be a <a href="https://passwordstore.org">password manager</a> in 700 lines of shell
+script, and another might be a
+<a href="https://github.com/camping/camping">web microframework</a> implemented as just a
+big rectangle of obfuscated Ruby.</p>
+
+<p>What the tutorials will have in common is the step-by-step build-it-yourself
+approach to reading and understanding the code of real open-source software
+projects. If there was a toy like Lego that involved putting <em>programs</em>
+together instead of physical structures, I think &ldquo;snaptoken&rdquo; would be a great
+name for it. That is the experience I&rsquo;m trying to create with tutorials like
+this.</p>
+<h2 id="how-to-contribute"><a href="#how-to-contribute">How to contribute</a></h2>
+
+<p>Contributions are welcome, whether it&rsquo;s changes to the text, the code, or the
+HTML/CSS.</p>
+
+<p>The text is in the <code>doc/</code> directory of the
+<a href="https://github.com/snaptoken/kilo-tutorial">kilo-tutorial</a> repo. Each chapter
+is a markdown (<code>.md</code>) file.</p>
+
+<p>The HTML/CSS is in the <code>doc/html_in/</code> directory.</p>
+
+<p>The code is in <code>steps.diff</code>, which isn&rsquo;t human-editable. It is generated by a
+program called <a href="https://github.com/snaptoken/leg">leg</a>.</p>
+
+<p>If you are making significant changes to the text, you probably want to
+generate the final static HTML files, to preview your changes. Here is how to
+generate the HTML output using the <code>leg</code> program:</p>
+
+<ol>
+<li>You need to have
+<a href="https://www.ruby-lang.org/en/documentation/installation/">Ruby</a> installed.</li>
+<li>Install the <code>leg</code> binary by running <code>gem install snaptoken</code> (you may need to
+<code>sudo</code> this).</li>
+<li>Inside the <code>kilo-tutorial</code> repo, run <code>leg doc</code> to generate the static HTML
+files in <code>doc/html_out/</code> and <code>doc/html_offline/</code>.</li>
+<li>When running <code>leg doc</code>, each step&rsquo;s diff is cached in a hidden dotfile, so
+as long as you&rsquo;re only making changes to files in the <code>doc/</code> folder, you can
+run <code>leg doc -c</code> to use the cached diffs and regenerate the HTML output way
+faster.</li>
+</ol>
+
+<p>If you just have a small correction to make in the text, there is no need to go
+through all this. Just make the change in the chapter&rsquo;s markdown file and
+<a href="https://github.com/snaptoken/kilo-tutorial/pulls">submit a pull request</a>.</p>
+<h2 id="credits"><a href="#credits">Credits</a></h2>
+
+<p><a href="http://invece.org/">antirez</a> is the author of
+<a href="https://github.com/antirez/kilo">kilo</a>. He wrote a
+<a href="http://antirez.com/news/108">blog post</a> about it, in which he explains how he
+reused code from two of his other projects to quickly throw together <code>kilo</code> in
+just a few hours during a couple already busy weekends. It&rsquo;s not the sort of
+pristine code you usually see in programming tutorials, but I like it this way.
+I originally intended this tutorial to be an experimental form of documentation
+for his code, until I started making changes to the code all over the place to
+make for a better reading experience.</p>
+
+<p>I used many of the <a href="https://github.com/antirez/kilo/pulls">patches</a> submitted
+to the <code>kilo</code> GitHub page to fix various bugs in <code>kilo</code>. The
+<a href="https://github.com/dvwallin/openemacs">openemacs</a> project (a fork of
+<code>kilo</code>) was also helpful as a reference.</p>
+
+<p>I used <a href="https://github.com/vmg/redcarpet">redcarpet</a> to render the Markdown
+source of this tutorial to HTML, and I used
+<a href="https://github.com/jneen/rouge">rouge</a> for syntax highlighting.</p>
+
+<p>If you want to know more about me, see
+<a href="http://viewsourcecode.org">viewsourcecode.org</a>.</p>
+<h2 id="license"><a href="#license">License</a></h2>
+
+<p>The <code>kilo</code> source code is released under the
+<a href="https://github.com/snaptoken/kilo-tutorial/blob/master/steps.diff.LICENSE">BSD 2-Clause</a>
+license.</p>
+
+<p>The rest of the tutorial is licensed under
+<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+
+    </div>
+    <div id="version">
+      <a href="https://github.com/snaptoken/kilo-tutorial/tree/v1.0.0beta11">1.0.0beta11</a>
+      (<a href="https://github.com/snaptoken/kilo-tutorial/blob/master/CHANGELOG.md">changelog</a>)
+    </div>
+    <footer class="bar">
+      <nav>
+        <a href="#">top of page</a>
+      </nav>
+    </footer>
+  </body>
+</html>
+

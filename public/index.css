@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css?family=Overpass+Mono:400,700');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Overpass Mono', monospace;
+  line-height: 130%;
+  color: #333;
+  font-size: 18px;
+  background-color: #eaf4ea;
+}
+
+.txt {
+  width: 444px;
+  padding: 18px;
+  background-color: white;
+  margin: 0 auto;
+}
+
+h1::before { content: '~ '; }
+h1::after  { content: ' ~'; }
+h2::before { content: '~ '; }
+h2::after  { content: ' ~'; }
+h1, h2 {
+  font-size: 18px;
+  margin-bottom: 24px;
+  text-align: center;
+  font-weight: bold;
+}
+
+p:not(:last-child) {
+  margin-bottom: 24px;
+}
+
+p > span:first-child {
+  font-weight: bold;
+  margin-right: 1ch;
+}
+
+a {
+  color: #26d;
+}
+
+.beneath {
+  width: 444px;
+  margin: 5px auto;
+  text-align: center;
+  font-size: 14px;
+}
+
+.beneath > a {
+  margin-right: 12px;
+}
+
+.pastry {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.pastry > img:hover {
+  animation: wiggily 0.5s 1 ease-out forwards;
+}
+
+@keyframes wiggily {
+  0% { transform: rotate(-3deg); }
+  20% { transform: rotate(3deg); }
+  40% { transform: rotate(-3deg); }
+  60% { transform: rotate(3deg); }
+  80% { transform: rotate(-3deg); }
+}
+
+@keyframes wiggilysmall {
+  0% { transform: rotate(-3deg) scale(0.5); }
+  20% { transform: rotate(3deg) scale(0.5); }
+  40% { transform: rotate(-3deg) scale(0.5); }
+  60% { transform: rotate(3deg) scale(0.5); }
+  80% { transform: rotate(-3deg) scale(0.5); }
+}
+
+@media screen and (max-width: 444px) {
+  .txt, .beneath {
+    width: auto;
+  }
+}
+
+@media screen and (min-resolution: 2dppx) {
+  .pastry > img {
+    transform: scale(0.5);
+  }
+
+  .pastry > img:hover {
+    animation: wiggilysmall 0.5s 1 ease-out forwards;
+  }
+}
