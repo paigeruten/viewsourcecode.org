@@ -56,3 +56,23 @@ vim /root/.ssh/authorized_keys
 systemctl restart ssh
 # Now only digitalocean web console can SSH in as root!
 ```
+
+## Upgrade packages
+
+```sh
+sudo apt update && sudo apt upgrade -y
+sudo reboot # Was required by some updates
+```
+
+## Certbot
+
+```sh
+sudo snap install --classic certbot
+# Update DNS records (A and AAAA) to point to new server, wait for DNS to propagate...
+sudo certbot --nginx -d viewsourcecode.org -d www.viewsourcecode.org
+# Clean up nginx config, add redirect from http to https, then run certbot again I guess?
+sudo vim /etc/nginx/sites-available/viewsourcecode.org
+sudo certbot --nginx -d viewsourcecode.org -d www.viewsourcecode.org
+# Clean up nginx config again
+sudo vim /etc/nginx/sites-available/viewsourcecode.org
+```

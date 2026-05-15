@@ -1,17 +1,59 @@
 server {
-        listen 80;
-        listen [::]:80;
+    server_name www.viewsourcecode.org;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    ssl_certificate /etc/letsencrypt/live/viewsourcecode.org/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/viewsourcecode.org/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-        root /var/www/viewsourcecode.org;
-        index index.html;
+    return 301 https://viewsourcecode.org$request_uri;
+}
 
-        server_name viewsourcecode.org;
+server {
+    server_name viewsourcecode.org;
 
-        location / {
-                try_files $uri $uri/ =404;
-        }
+    root /var/www/viewsourcecode.org;
+    index index.html;
 
-        location /code {
-                autoindex on;
-        }
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location /code {
+        autoindex on;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    listen [::]:443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/viewsourcecode.org/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/viewsourcecode.org/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+    server_name viewsourcecode.org;
+
+    listen 80;
+    listen [::]:80;
+
+    if ($host = viewsourcecode.org) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    return 404; # managed by Certbot
+}
+
+server {
+    server_name www.viewsourcecode.org;
+
+    listen 80;
+    listen [::]:80;
+
+    if ($host = www.viewsourcecode.org) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    return 404; # managed by Certbot
 }
