@@ -22,8 +22,8 @@ apt update
 apt install nginx
 ufw allow 'NGINX Full'
 
-mkdir -p /var/www/viewsourcecode.org/html
-vim /var/www/viewsourcecode.org/html/index.html
+mkdir -p /var/www/viewsourcecode.org
+vim /var/www/viewsourcecode.org/index.html
 vim /etc/nginx/sites-available/viewsourcecode.org
 # see ./nginx/viewsourcecode.org
 ln -s /etc/nginx/sites-available/viewsourcecode.org /etc/nginx/sites-enabled/
@@ -70,6 +70,58 @@ sudo reboot # Was required by some updates
 sudo snap install --classic certbot
 # Update DNS records (A and AAAA) to point to new server, wait for DNS to propagate...
 sudo certbot --nginx -d viewsourcecode.org -d www.viewsourcecode.org
+# Clean up nginx config, add redirect from http to https, then run certbot again I guess?
+sudo vim /etc/nginx/sites-available/viewsourcecode.org
+sudo certbot --nginx -d viewsourcecode.org -d www.viewsourcecode.org
+# Clean up nginx config again
+sudo vim /etc/nginx/sites-available/viewsourcecode.org
+```
+
+## Disable MOTD on login
+
+```sh
+touch ~/.hushlogin
+```
+
+## [Buskatoon](https://github.com/paigeruten/buskatoon)
+
+### Install PHP and Composer
+
+```sh
+sudo apt update && sudo apt install php php-mbstring php-sqlite3 unzip
+# Download composer.phar by following instructions on https://getcomposer.org/download/
+sudo mv composer.phar /usr/local/bin/composer
+```
+
+### Nginx
+
+```sh
+sudo mkdir -p /var/www/buskatoon.ca
+sudo chown paige:paige /var/www/buskatoon.ca
+sudo chmod 775 /var/www/buskatoon.ca
+vim /var/www/buskatoon.ca/index.html
+chmod 755 /var/www/buskatoon.ca/index.html
+sudo vim /etc/nginx/sites-available/buskatoon.ca
+# see ./nginx/buskatoon.ca
+sudo ln -s /etc/nginx/sites-available/buskatoon.ca /etc/nginx/sites-enabled/
+systemctl restart nginx
+```
+
+### Backend setup
+
+```sh
+mkdir ~/buskatoon
+# Run `just deploy` from buskatoon repo to copy files and install PHP dependencies
+cat ~/buskatoon/cron/crontab.txt
+# Copy crontab.txt contents into crontab editor
+crontab -e
+```
+
+### Certbot
+
+```sh
+# Update DNS records (A and AAAA) to point to new server, wait for DNS to propagate...
+sudo certbot --nginx -d buskatoon.ca -d www.buskatoon.ca
 # Clean up nginx config, add redirect from http to https, then run certbot again I guess?
 sudo vim /etc/nginx/sites-available/viewsourcecode.org
 sudo certbot --nginx -d viewsourcecode.org -d www.viewsourcecode.org
