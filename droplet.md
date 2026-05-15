@@ -122,9 +122,4 @@ crontab -e
 ```sh
 # Update DNS records (A and AAAA) to point to new server, wait for DNS to propagate...
 sudo certbot --nginx -d buskatoon.ca -d www.buskatoon.ca
-# Clean up nginx config, add redirect from http to https, then run certbot again I guess?
-sudo vim /etc/nginx/sites-available/viewsourcecode.org
-sudo certbot --nginx -d viewsourcecode.org -d www.viewsourcecode.org
-# Clean up nginx config again
-sudo vim /etc/nginx/sites-available/viewsourcecode.org
 ```
