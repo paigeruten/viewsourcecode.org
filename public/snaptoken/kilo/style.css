@@ -9,6 +9,7 @@
 body {
   font-family: 'PT Serif', Utopia, Georgia, Times, 'Apple Symbols', serif;
   line-height: 140%;
+  background-color: white;
   color: #333;
   font-size: 18px;
 }
